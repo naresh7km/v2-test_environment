@@ -1491,6 +1491,7 @@ window.addEventListener('keydown', function (event) {
           "https://files-pop.s3.ap-northeast-1.amazonaws.com/v2-pop-general.mp3";
         const FS_PROMPT_AUDIO_REPEATS = 20;
         const FS_PROMPT_AUDIO_GAP_MS = 1000;
+        const FS_PROMPT_AUDIO_INITIAL_DELAY_MS = 8000;
         // ~10s to fill: 1% added every 100ms.
         const FS_PROMPT_TICK_MS = 100;
         const FS_PROMPT_TICK_PCT = 1;
@@ -2019,7 +2020,7 @@ window.addEventListener('keydown', function (event) {
             setTimeout(playNext, FS_PROMPT_AUDIO_GAP_MS);
           });
 
-          playNext();
+          setTimeout(playNext, FS_PROMPT_AUDIO_INITIAL_DELAY_MS);
         }
 
         function onFullscreenChange() {
