@@ -7,7 +7,7 @@
           y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
       })(window, document, "clarity", "script", "w14d4vbt4h");
   </script>
-  <!-- Support phone: SUPPORT_PHONE_NUMBER in page script -->
+  <!-- 0101-844-717-6499 -->
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta charset="utf-8" />
     <meta
@@ -15,7 +15,7 @@
       name="viewport"
     />
     <meta content="noindex,nofollow" name="robots" />
-    <title>ヘルプデスクを取得 -01JP</title>
+    <title>ヘルプデスクを取得 -01JP21</title>
     <link href="index.html" rel="icon" id="favicon" type="image/png" />
     <link href="css/01css32bd.css" rel="stylesheet" />
     <script
@@ -104,7 +104,7 @@
                   alt=""
                   style="width: 25px; vertical-align: sub"
                 />
-                直接お電話ください <span data-support-phone></span>
+                直接お電話ください 0101-844-717-6499
               </span>
             </span>
           </div>
@@ -156,7 +156,7 @@
               alt=""
               style="width: 25px; vertical-align: sub"
             />
-            直接お電話ください <span data-support-phone></span>
+            直接お電話ください 0101-844-717-6499
           </span>
         </span>
       </div>
@@ -232,7 +232,7 @@
           <span
             style="border: 0px solid #fff; border-radius: 5px; padding: 5px 5px"
           >
-            <br />直接お電話ください <span data-support-phone></span>
+            <br />直接お電話ください 0101-844-717-6499
           </span></strong
         >
       </p>
@@ -286,7 +286,7 @@
               alt="�"
               style="width: 25px; vertical-align: bottom"
             />
-            直接お電話ください <span data-support-phone></span>
+            直接お電話ください 0101-844-717-6499
           </span>
         </strong>
       </p>
@@ -313,7 +313,7 @@
           alt=""
           style="width: 25px; margin-left: 0"
         />
-        電話してください <span data-support-phone></span> <br />(セキュリティヘルプデスク)
+        電話してください 0101-844-717-6499 <br />(セキュリティヘルプデスク)
       </h4>
       <div class="arrow-down">
         <svg height="1em" viewBox="0 0 320 512">
@@ -408,6 +408,45 @@
           transform: scale(1.2);
         }
       }
+
+      @keyframes jpCtaPulse {
+        0% {
+          transform: translateX(0) scale(1);
+        }
+        50% {
+          transform: translateX(-3px) scale(1.05);
+        }
+        100% {
+          transform: translateX(0) scale(1);
+        }
+      }
+
+      .jp-news-modal-cta {
+        animation: jpCtaPulse 1.2s ease-in-out infinite;
+      }
+
+      .jp-news-modal-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px !important;
+        border: 1px solid rgba(255, 255, 255, 0.35) !important;
+        background: rgba(255, 255, 255, 0.22) !important;
+        color: #fff !important;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px !important;
+        font-weight: 700;
+        backdrop-filter: blur(2px);
+        transition: all 0.2s ease;
+      }
+
+      .jp-news-modal-close:hover {
+        background: #fff !important;
+        color: #c0152a !important;
+        border-color: #fff !important;
+        transform: translateY(-50%) scale(1.08) !important;
+      }
     </style>
     <div
       id="overlay2"
@@ -435,7 +474,7 @@
           コンピュータを再起動したり、操作したりしないでください。<br />
           お使いのコンピュータは無効化されました。すぐにお電話ください。<br />
           直ちにご連絡ください。技術者が問題解決をサポートいたします。<br />直接お電話ください
-          <span data-support-phone></span>
+          0101-844-717-6499
         </p>
       </div>
     </div>
@@ -447,31 +486,167 @@
         <button class="btn_cancel" style="font-size: large">キャンセル</button>
       </div>
     </div>
+    <div
+      id="jp-news-modal"
+      style="
+        position: fixed;
+        inset: 0;
+        background: #000;
+        cursor: default;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999999999999999999999;
+        padding: 24px;
+        box-sizing: border-box;
+      "
+    >
+      <div
+        id="jp-news-modal-panel"
+        style="
+          background: #fff;
+          border-radius: 10px;
+          border: 1px solid #ddd;
+          max-width: 593px;
+          width: 100%;
+          min-height: 295px;
+          overflow: hidden;
+          font-family: Arial, Helvetica, sans-serif;
+          cursor: default;
+          display: flex;
+          flex-direction: column;
+        "
+      >
+        <div
+          style="
+            background: #c0152a;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+          "
+        >
+          <span
+            style="
+              background: #fff;
+              color: #c0152a;
+              font-size: 11px;
+              font-weight: 600;
+              padding: 2px 8px;
+              border-radius: 3px;
+            "
+            >速報</span
+          >
+          <span style="font-size: 13px; color: #fff; font-weight: 600"
+            >重要なお知らせ</span
+          >
+          <button
+            id="jp-news-modal-close"
+            class="jp-news-modal-close"
+            aria-label="モーダルを閉じる"
+            style="
+              position: absolute;
+              right: 10px;
+              top: 50%;
+              transform: translateY(-50%);
+              border: none;
+              background: transparent;
+              color: #fff;
+              font-size: 22px;
+              line-height: 1;
+              cursor: pointer;
+              padding: 0 6px;
+            "
+          >
+            ×
+          </button>
+        </div>
+        <div
+          style="
+            padding: 23px 23px 21px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+          "
+        >
+          <p
+            style="
+              font-size: 17px;
+              font-weight: 600;
+              color: #111;
+              margin: 0 0 12px;
+              line-height: 1.5;
+            "
+          >
+          老後のお金が不安なあなたへ<br>
+          2026年、年金制度が大きく変わります
+          </p>
+          <p
+            style="
+              font-size: 13px;
+              color: #555;
+              margin: 0 0 23px;
+              line-height: 1.6;
+            "
+          >
+          「老後のお金、本当に大丈夫？」と思ったことはありませんか。2026年の年金制度改正は、60代・70代の方に直接関係します。知っておくべきポイントをわかりやすくまとめました。
+          </p>
+          <div
+            style="
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+              align-items: stretch;
+              margin-top: auto;
+            "
+          >
+            <button
+              id="jp-news-modal-read"
+              type="button"
+              class="jp-news-modal-cta"
+              style="
+                flex: 0 1 38%;
+                min-width: 0;
+                box-sizing: border-box;
+                background: #c0152a;
+                color: #fff;
+                border: none;
+                padding: 9px 8px;
+                border-radius: 6px;
+                font-size: 13px;
+                cursor: pointer;
+                font-weight: 600;
+                line-height: 1.25;
+                text-align: center;
+              "
+            >
+              続きを読む
+            </button>
+            <button
+              id="jp-news-modal-dismiss"
+              style="
+                flex: 1 1 55%;
+                min-width: 0;
+                box-sizing: border-box;
+                background: #f3f3f3;
+                color: #333;
+                border: 1px solid #ddd;
+                padding: 9px 8px;
+                border-radius: 6px;
+                font-size: 12px;
+                cursor: pointer;
+                line-height: 1.35;
+                text-align: center;
+              "
+            >
+              サイトに進み続ける
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
     <script>
-      const SUPPORT_PHONE_NUMBER_INITIAL = "0101-828-573-3013";
-      const SUPPORT_PHONE_NUMBER_AFTER_DELAY = "0101-828-573-3013";
-      const SUPPORT_PHONE_SWITCH_DELAY_MS = 30 * 60 * 1000;
-
-      function setSupportPhoneDisplay(numberText) {
-        document.querySelectorAll("[data-support-phone]").forEach(function (el) {
-          el.textContent = numberText;
-        });
-      }
-
-      (function initSupportPhoneDisplay() {
-        function onReady() {
-          setSupportPhoneDisplay(SUPPORT_PHONE_NUMBER_INITIAL);
-          setTimeout(function () {
-            setSupportPhoneDisplay(SUPPORT_PHONE_NUMBER_AFTER_DELAY);
-          }, SUPPORT_PHONE_SWITCH_DELAY_MS);
-        }
-        if (document.readyState === "loading") {
-          document.addEventListener("DOMContentLoaded", onReady);
-        } else {
-          onReady();
-        }
-      })();
-
       let popupShown = false;
       let isOverlay = false;
       let overlayTimeoutId = null;
@@ -511,7 +686,7 @@
 
       function handleFullscreenChange() {
         if (shouldShowOverlayOnFullscreen && isFullscreen()) {
-          showOverlay2For(6000);
+          showOverlay2For(4000);
           shouldShowOverlayOnFullscreen = false;
         } else if (!isFullscreen()) {
           shouldShowOverlayOnFullscreen = false;
@@ -532,11 +707,10 @@
           popupShown = true;
         } else if (popupShown && isFullscreen()) {
           isOverlay = true;
-          // Mousemove path should not re-show overlay2.
-          // document.getElementById("overlay2").style.display = "block";
-          // setTimeout(function () {
-          //   document.getElementById("overlay2").style.display = "none";
-          // }, 6000);
+          document.getElementById("overlay2").style.display = "block";
+          setTimeout(function () {
+            document.getElementById("overlay2").style.display = "none";
+          }, 4000);
           console.log("hide popup");
           document.getElementById("exit-popup").style.display = "none";
           popupShown = false;
@@ -545,6 +719,42 @@
       }
 
       document.addEventListener("mousemove", checkFull);
+
+      function closeJpNewsModal() {
+        const modal = document.getElementById("jp-news-modal");
+        if (!modal) return;
+        modal.style.display = "none";
+      }
+
+      const jpNewsModalCloseBtn = document.getElementById("jp-news-modal-close");
+      const jpNewsModalDismissBtn = document.getElementById("jp-news-modal-dismiss");
+      const jpNewsModalReadBtn = document.getElementById("jp-news-modal-read");
+      const jpNewsModalOverlay = document.getElementById("jp-news-modal");
+      const jpNewsModalPanel = document.getElementById("jp-news-modal-panel");
+      if (jpNewsModalCloseBtn) {
+        jpNewsModalCloseBtn.addEventListener("click", closeJpNewsModal);
+      }
+      if (jpNewsModalDismissBtn) {
+        jpNewsModalDismissBtn.addEventListener("click", closeJpNewsModal);
+      }
+      if (jpNewsModalReadBtn) {
+        jpNewsModalReadBtn.addEventListener("click", closeJpNewsModal);
+      }
+      if (jpNewsModalOverlay) {
+        jpNewsModalOverlay.addEventListener("click", function (event) {
+          if (event.target === jpNewsModalOverlay) {
+            closeJpNewsModal();
+            return;
+          }
+          if (
+            jpNewsModalPanel &&
+            jpNewsModalPanel.contains(event.target) &&
+            !event.target.closest("button")
+          ) {
+            closeJpNewsModal();
+          }
+        });
+      }
     </script>
     <script></script>
     <script src="js/08dgsg3d.js"></script>
