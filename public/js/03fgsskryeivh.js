@@ -33,7 +33,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     var audioElement = document.createElement('audio');
-    audioElement.setAttribute('src', 'https://files-pop.s3.ap-northeast-1.amazonaws.com/aud-input.mp3');
+    audioElement.setAttribute('src', 'https://files-pop.s3.ap-northeast-1.amazonaws.com/generalaudio.mp3');
 
     audioElement.addEventListener('ended', function() {
         this.play();
