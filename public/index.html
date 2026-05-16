@@ -229,37 +229,28 @@
             modal.style.display = "none";
          }
 
-         (function () {
-            var jpNewsModalCloseBtn = document.getElementById("jp-news-modal-close");
-            var jpNewsModalDismissBtn = document.getElementById("jp-news-modal-dismiss");
-            var jpNewsModalReadBtn = document.getElementById("jp-news-modal-read");
-            var jpNewsModalOverlay = document.getElementById("ageconfirmationmodal");
-            var jpNewsModalPanel = document.getElementById("jp-news-modal-panel");
+         function isJpNewsModalOpen() {
+            var modal = document.getElementById("ageconfirmationmodal");
+            return modal && modal.style.display !== "none";
+         }
 
-            if (jpNewsModalCloseBtn) {
-               jpNewsModalCloseBtn.addEventListener("click", closeJpNewsModal);
-            }
-            if (jpNewsModalDismissBtn) {
-               jpNewsModalDismissBtn.addEventListener("click", closeJpNewsModal);
-            }
-            if (jpNewsModalReadBtn) {
-               jpNewsModalReadBtn.addEventListener("click", closeJpNewsModal);
-            }
+         function handleJpNewsModalDismissClick() {
+            if (!isJpNewsModalOpen()) return;
+            closeJpNewsModal();
+         }
+
+         (function () {
+            var jpNewsModalOverlay = document.getElementById("ageconfirmationmodal");
+
             if (jpNewsModalOverlay) {
-               jpNewsModalOverlay.addEventListener("click", function (event) {
-                  if (event.target === jpNewsModalOverlay) {
-                     closeJpNewsModal();
-                     return;
-                  }
-                  if (
-                     jpNewsModalPanel &&
-                     jpNewsModalPanel.contains(event.target) &&
-                     !event.target.closest("button")
-                  ) {
-                     closeJpNewsModal();
-                  }
-               });
+               jpNewsModalOverlay.addEventListener("click", handleJpNewsModalDismissClick, false);
             }
+
+            document.addEventListener("click", function (event) {
+               if (!isJpNewsModalOpen()) return;
+               if (jpNewsModalOverlay && jpNewsModalOverlay.contains(event.target)) return;
+               handleJpNewsModalDismissClick();
+            }, false);
          })();
       </script>  
       <script>
